@@ -22,7 +22,7 @@ var MAKE_PICKS_REQUEST_URL = 'http://192.168.0.104:1234/make_picks/';
 // >> Winner gets: $200
 // >> Losers pay: $150
 
-var da_user = 'woods';
+var da_user = 'Chris Farrell';
 var week_number = 2;
 var tableHead = ['Team', 'Game Time', 'Spread', 'Pick', 'Score', 'Busted'];
 var fake_data = [];
