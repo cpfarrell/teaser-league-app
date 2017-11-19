@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button, TouchableOpacity, ScrollView, Dimensions, AsyncStorage } from 'react-native';
-
-import { host_port } from './host';
-
-var REQUEST_URL_BASE = host_port + '/list_of_weeks/';
+import { loadUser } from './storage';
+import { DB_HOST} from './constants';
+ 
+var REQUEST_URL_BASE = 'http://' + DB_HOST + '/list_of_weeks/';
 
 var ASYNC_STORAGE_USER_KEY = '@TeaserLeague:key';
 
@@ -17,7 +17,7 @@ class WeekDisplay extends React.Component {
             amountToDisplay = "$" + this.props.weekWinLoss;
         }
         return (
-            <TouchableOpacity onPress={this._handlePress} underlayColor='#fff'>
+            <TouchableOpacity onPress={this._handlePress.bind(this)} underlayColor='#fff'>
                 <Text style={[styles.weekDisplayWon, this.props.weekWinLoss < 0 && styles.weekDisplayLoss]}>
                     {this.props.weekNumberString}{"\n"}
                     {amountToDisplay}
@@ -25,8 +25,9 @@ class WeekDisplay extends React.Component {
             </TouchableOpacity>
         );
     }
-    _handlePress(event) {
-        console.log('Pressed!');
+    _handlePress() {
+        var {week_id, navigate} = this.props;
+        navigate('WeeklyPicks', {week_number: week_id});
     }
 }
 
@@ -38,28 +39,8 @@ export class ListOfWeeksScreen extends React.Component {
              "isLoading": true,
              "username": defaultUserName
          };
-         this.loadUser().then( () => {this.fetchData() });
+         loadUser.bind(this)().then( () => {this.fetchData() });
 	}
-
-  async loadUser() {
-        try {
-          const value = await AsyncStorage.getItem(ASYNC_STORAGE_USER_KEY);
-          this.setState({username: value})
-          if (value !== null){
-            // We have data!!
-            void(0);
-            console.log("SUCCESS!!!!      " + value);
-          }
-          else {
-            // Null user...
-            void(0);
-            console.log("FAIL.........    " + value);
-          }
-        } catch (error) {
-            console.log("[ERROR] Error fetching user from persistent storage.");
-            console.log(error);
-        }
-  }
 
 	componentDidMount() {
 		console.log("did mount");
@@ -81,8 +62,10 @@ export class ListOfWeeksScreen extends React.Component {
         this.setState({username: nav_state.selected_username}, () => {this.fetchData()});
     }
 
-
     render() {
+        // Navigate elsewhere.
+        const {navigate} = this.props.navigation;
+        // Navigated here.
         var nav_state = this.props.navigation.state.params;
 
         var userNameToDisplay = this.state.username;
@@ -97,7 +80,13 @@ export class ListOfWeeksScreen extends React.Component {
             var weekNumber = "Week " + weekViewResponse[i].week;
             var weekWinLoss = parseInt(weekViewResponse[i].profit);
             allWeeks.push(
-                <WeekDisplay key = {i} weekNumberString = {weekNumber} weekWinLoss = {weekWinLoss} />
+                <WeekDisplay 
+                    key={i} 
+                    week_id={weekNumber}
+                    weekNumberString={weekNumber} 
+                    weekWinLoss={weekWinLoss} 
+                    navigate={navigate}
+                />
             )
         }
         return (<ScrollView>
@@ -125,7 +114,7 @@ var styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 20,
         textAlign: 'center',
-        backgroundColor:'#008000',
+        backgroundColor:'#ACD7EC',
         borderRadius:10,
         borderWidth: 1,
         borderColor: '#fff'
@@ -136,7 +125,7 @@ var styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 20,
         textAlign: 'center',
-        backgroundColor: '#D3D3D3',
+        backgroundColor: '#8B95C9',
         borderRadius:10,
         borderWidth: 1,
         borderColor: '#fff'
@@ -147,9 +136,10 @@ var styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 20,
         textAlign: 'center',
-        backgroundColor: '#3090C7',
+        backgroundColor: '#083D77',
         borderRadius:10,
         borderWidth: 1,
-        borderColor: '#fff'
+        borderColor: '#fff',
+        color: 'white'
     }
 })

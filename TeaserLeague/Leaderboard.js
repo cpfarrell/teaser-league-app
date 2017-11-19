@@ -3,7 +3,8 @@ import { StyleSheet, Text, View, ScrollView, FlatList, TouchableOpacity, Refresh
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
 import { host_port } from './host';
 
-var REQUEST_URL = host_port + '/leaderboard';
+import { DB_HOST} from './constants';
+var REQUEST_URL = 'http://' + DB_HOST + '/leaderboard';
 
 
 export class LeaderboardScreen extends React.Component {
@@ -96,6 +97,6 @@ const styles = StyleSheet.create({
     textAlign: 'center', 
     textAlignVertical: 'center',
   },
-  head: { height: 50, backgroundColor: 'skyblue' },
+  head: { height: 50, backgroundColor: '#D6EDFF' },
   row: { height: 50 }
 });

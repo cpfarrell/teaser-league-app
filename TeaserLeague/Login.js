@@ -1,13 +1,15 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button, StatusBar, ScrollView, AsyncStorage, Alert, TextInput, TouchableHighlight } from 'react-native';
+import { loadUser, ASYNC_STORAGE_USER_KEY, ASYNC_STORAGE_TOKEN_KEY } from './storage';
+import { DB_HOST} from './constants';
 
-var ASYNC_STORAGE_USER_KEY = '@TeaserLeague:key';
+var LOGIN_URL = 'http://' + DB_HOST + '/login';
 
 export class LoginScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {user: "no_user_X"};
-        this.loadUser();
+        loadUser.bind(this)();
         this.showAsyncStorageKeys();
     }
 
@@ -16,28 +18,13 @@ export class LoginScreen extends React.Component {
         await AsyncStorage.getAllKeys(() => void(0)).then((result) => console.log("!> " + result));
   }
 
-  async storeUser(user) {
+  async storeUser(user, id_token) {
         try {
               await AsyncStorage.setItem(ASYNC_STORAGE_USER_KEY, user);
+              await AsyncStorage.setItem(ASYNC_STORAGE_TOKEN_KEY, id_token);
         } catch (error) {
               console.log("Login.js error!! Couldn't set user: " + user);
-        }
-    }
-
-  async loadUser() {
-        try {
-          const value = await AsyncStorage.getItem(ASYNC_STORAGE_USER_KEY);
-          this.setState({user: value})
-          if (value !== null){
-            // We have data!!
-            void(0);
-          }
-          else {
-            // Null user...
-            void(0);
-          }
-        } catch (error) {
-            console.log("[ERROR] Error fetching user from persistent storage.");
+              console.log(error);
         }
     }
 
@@ -47,15 +34,26 @@ export class LoginScreen extends React.Component {
     }
 
     render() {
-        var set_user_in_state_and_persistent_storage = (text) => {
-            this.storeUser(text);
-            this.setState({user: text});
+        var set_user_in_state_and_persistent_storage = (user, id_token) => {
+            this.storeUser(user, id_token);
+            this.setState({user: user, id_token: id_token});
         }
 
         var authenticateAndStoreUser = () => {
-            if (this.state.user_text == this.state.password_text) {
-                set_user_in_state_and_persistent_storage(this.state.user_text);
-            }
+            fetch(LOGIN_URL, {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({username: this.state.user_text, password: this.state.password_text})
+            })
+            .then( (response) => response.json() )
+            .then( (response) => {
+                if (response.status == 'success') {
+                    set_user_in_state_and_persistent_storage(this.state.user_text, response.id_token);
+                }
+            });
         }
 
         return (
@@ -77,7 +75,7 @@ export class LoginScreen extends React.Component {
                     onChangeText={(text) => this.setState({password_text: text})}
                     value={this.state.password_text}
                 />
-                <Button title="Submit" onPress={authenticateAndStoreUser} />
+                <Button title="Submit" onPress={authenticateAndStoreUser} color='#083D77'/>
                 <Text>Currently logged in user: {this.getUser()}</Text>
             </View>
        );
