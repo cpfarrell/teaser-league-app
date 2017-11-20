@@ -8,7 +8,7 @@ var REQUEST_URL_BASE = 'http://' + DB_HOST + '/list_of_weeks/';
 var ASYNC_STORAGE_USER_KEY = '@TeaserLeague:key';
 
 var screenWidth = Dimensions.get('window').width;
-var defaultUserName = "ngoyal"
+var defaultUserName = "Default (Working on it)"
 
 class WeekDisplay extends React.Component {
     render() {
