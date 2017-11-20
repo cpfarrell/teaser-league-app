@@ -4,5 +4,5 @@ brew install npm
 brew install watchman  
 make  
 cd TeaserLeage  
-Make file named host.js that contains the line "export const host_port = 'myhost:port';"  
+Make constants.js have the host you want to connect to
 npm start
