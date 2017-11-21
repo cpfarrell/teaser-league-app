@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, ScrollView, FlatList, TouchableOpacity, RefreshControl} from 'react-native';
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
-import { host_port } from './host';
 
 import { DB_HOST} from './constants';
 var REQUEST_URL = 'http://' + DB_HOST + '/leaderboard';
