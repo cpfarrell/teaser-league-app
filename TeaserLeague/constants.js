@@ -1,2 +1,2 @@
 
-export var DB_HOST = '10.0.100.218:8564';
+export var DB_HOST = 'ec2-13-57-3-135.us-west-1.compute.amazonaws.com:8564';
