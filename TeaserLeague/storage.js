@@ -7,7 +7,7 @@ export var ASYNC_STORAGE_TOKEN_KEY = '@TeaserLeague:id_token';
 export async function loadUser() {
     try {
       const value = await AsyncStorage.getItem(ASYNC_STORAGE_USER_KEY);
-      this.setState({user: value})
+      this.setState({logged_in_user: value})
       if (value !== null){
         // We have data!!
         void(0);

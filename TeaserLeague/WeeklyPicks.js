@@ -22,7 +22,7 @@ var MAKE_PICKS_REQUEST_URL = 'http://' + DB_HOST + '/make_picks/';
 // >> Winner gets: $200
 // >> Losers pay: $150
 
-var da_user = 'Chris Farrell';
+var username = 'Chris Farrell';
 var week_number = 2;
 var tableHead = ['Team', 'Game Time', 'Spread', 'Pick', 'Score', 'Busted'];
 var fake_data = [];
@@ -68,13 +68,13 @@ export class WeeklyPicksScreen extends React.Component {
       await loadUser.bind(this)();
       await loadIdToken.bind(this)();
       //console.log(event)
-      fetch(MAKE_PICKS_REQUEST_URL + week_number + '/' + da_user, {
+      fetch(MAKE_PICKS_REQUEST_URL + week_number + '/' + this.state.username, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({user: da_user, id_token: this.state.id_token, teams: this.getTeamList(event)})
+        body: JSON.stringify({user: this.state.uusername, id_token: this.state.id_token, teams: this.getTeamList(event)})
       })
           .then( (response) => response.json() )
           .then( (response) => {
@@ -83,12 +83,16 @@ export class WeeklyPicksScreen extends React.Component {
                       "Save Failed",
                       "Authentication is probably to blame."
                   );
+              } else {
+                  Alert.alert(
+                      "Picks Successfully Saved",
+                  );
               }
           });
     }
 
     async fetchData() {
-      const response = await fetch(REQUEST_URL + week_number + '/' + da_user);
+      const response = await fetch(REQUEST_URL + this.state.week_number + '/' + this.state.username);
       const responseData = await response.json();
       pickCount = this.getPickCount(responseData)
       this.setState({
@@ -143,8 +147,6 @@ export class WeeklyPicksScreen extends React.Component {
           'Pick less than 4 teams')
       } else {
         this.saveDataToServer(event)
-        Alert.alert("Saving!!!",
-        "Saving your picks")
       }
     }
 
@@ -158,7 +160,8 @@ export class WeeklyPicksScreen extends React.Component {
     // When we nave navigated to this screen.
     componentWillReceiveProps(nextProps) {
         var nav_state = nextProps.navigation.state.params;
-        this.setState({week_number: nav_state.week_number});
+        console.log("The week is " + nav_state.week_number + ". Username: " + nav_state.username)
+        this.setState({week_number: nav_state.week_number, username: nav_state.username}, () => {this.fetchData()});
     }
 
     render() {
@@ -166,24 +169,24 @@ export class WeeklyPicksScreen extends React.Component {
         if (this.state.isLoading) {
           return <View><Text>Loading...</Text></View>;
         }
-        fake_data = this.state.data;
-        console.log(fake_data)
+        data = this.state.data;
+        // console.log(data)
 
-        for(let i = 0; i < fake_data.length; i++){
-          tableDataToDisplay = this.dataToTable(fake_data[i]);
+        for(let i = 0; i < data.length; i++){
+          tableDataToDisplay = this.dataToTable(data[i]);
             tableRows.push(<Row data={tableDataToDisplay} key= {i} style={[styles.row, i%4 < 2 && {backgroundColor: '#ACD7EC'}]} textStyle={styles.text}/>)
         }
 
         // Make the save button look different if you have more than 4 teams selected.
         var textStyle = [styles.saveButton];
-        if (this.state.pickCount > 4 ) {
+        if (this.state.username != this.state.logged_in_user ) {
             textStyle.push({backgroundColor: '#8e9199', color: '#dbdcdd'});
         }
 
         return (
               <View style={{flex:1}}>
                 <Text style={styles.userHeader}>
-                  {da_user}, Week {week_number} (well, navigationally {this.state.week_number}...)
+                    {this.state.username}, Week {this.state.week_number}
                 </Text>
                 <ScrollView
                   refreshControl={
@@ -196,7 +199,7 @@ export class WeeklyPicksScreen extends React.Component {
                     <Row data={tableHead} style={styles.head} textStyle={styles.text}/>
                       {tableRows}
                   </Table>
-                  <TouchableOpacity onPress={() => {this._handlePressSave(fake_data)}} underlayColor='#fff'>
+                  <TouchableOpacity onPress={() => {this._handlePressSave(data)}} underlayColor='#fff'>
                     <Text style={textStyle}>
                         Save
                     </Text>
@@ -206,7 +209,7 @@ export class WeeklyPicksScreen extends React.Component {
        );
     }
 }
-//<Rows data={fake_data} style={styles.row} textStyle={styles.text} flexArr={[1, 2, 2]}/>
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

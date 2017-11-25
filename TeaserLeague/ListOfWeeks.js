@@ -26,8 +26,8 @@ class WeekDisplay extends React.Component {
         );
     }
     _handlePress() {
-        var {week_id, navigate} = this.props;
-        navigate('WeeklyPicks', {week_number: week_id});
+        var {week_id, username, navigate} = this.props;
+        navigate('WeeklyPicks', {week_number: week_id, username: username});
     }
 }
 
@@ -77,7 +77,7 @@ export class ListOfWeeksScreen extends React.Component {
 
         var allWeeks = [];
         for (var i =0;i< weekViewResponse.length; i++) {
-            var weekNumber = "Week " + weekViewResponse[i].week;
+            var weekNumber = weekViewResponse[i].week;
             var weekWinLoss = parseInt(weekViewResponse[i].profit);
             allWeeks.push(
                 <WeekDisplay 
@@ -85,6 +85,7 @@ export class ListOfWeeksScreen extends React.Component {
                     week_id={weekNumber}
                     weekNumberString={weekNumber} 
                     weekWinLoss={weekWinLoss} 
+                    username={userNameToDisplay}
                     navigate={navigate}
                 />
             )
