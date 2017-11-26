@@ -5,4 +5,7 @@ brew install watchman
 make  
 cd TeaserLeage  
 Make constants.js have the host you want to connect to
-npm start
+npm start  
+
+To make app available on expo project list  
+exp publish
