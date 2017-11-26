@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, StatusBar, ScrollView, CheckBox, TouchableOpacity, TouchableHighlight, Alert, RefreshControl } from 'react-native';
-import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
+import { StyleSheet, Text, View, Button, StatusBar, ScrollView, CheckBox, TouchableOpacity, TouchableHighlight, Alert, Modal, RefreshControl } from 'react-native';
+import { Table, TableWrapper, Row, Rows, Col, Cols, Cell, ListView } from 'react-native-table-component';
 import { loadUser, loadIdToken } from './storage';
 import { DB_HOST} from './constants';
  
@@ -170,8 +170,7 @@ export class WeeklyPicksScreen extends React.Component {
           return <View><Text>Loading...</Text></View>;
         }
         teams = this.state.data['teams'];
-        // console.log(teams)
-
+        console.log('Pulled teams')
         for(let i = 0; i < teams.length; i++){
           tableDataToDisplay = this.dataToTable(teams[i]);
             tableRows.push(<Row data={tableDataToDisplay} key= {i} style={[styles.row, i%4 < 2 && {backgroundColor: '#ACD7EC'}]} textStyle={styles.text}/>)
@@ -195,11 +194,6 @@ export class WeeklyPicksScreen extends React.Component {
                       onRefresh={this._onRefresh.bind(this)}
                     />
                   }>
-                  <TouchableOpacity onPress={Alert.alert("Thingy")}>
-                     <View>
-                          <Text style={{textAlign: 'center', 'color': '#083D77', fontWeight: 'bold', fontSize: 20}}> {data['pick']} </Text>
-                     </View>
-                  </TouchableOpacity><View>
                   <View>
                       <Text style={styles.summary}> Number of losers: {this.state.data['losers'].length}</Text>
                   </View>
