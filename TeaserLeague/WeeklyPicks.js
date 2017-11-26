@@ -24,7 +24,7 @@ var MAKE_PICKS_REQUEST_URL = 'http://' + DB_HOST + '/make_picks/';
 
 var username = 'Chris Farrell';
 var week_number = 2;
-var tableHead = ['Team', 'Game Time', 'Spread', 'Pick', 'Score', 'Busted'];
+var tableHead = ['Team', 'Game Time', 'Pick', 'Scores', 'Spread', '# Picks', 'Busted'];
 var fake_data = [];
 
 export class WeeklyPicksScreen extends React.Component {
@@ -119,7 +119,7 @@ export class WeeklyPicksScreen extends React.Component {
           )
         }
 
-      tabelData = [data['team'], data['game_time'], data['spread'], pickable, data['score'], data['busted']];
+      tabelData = [data['team'], data['game_time'], pickable, data['score'], data['spread'], data['picks'], data['busted']];
       return tabelData;
     }
 
@@ -169,11 +169,11 @@ export class WeeklyPicksScreen extends React.Component {
         if (this.state.isLoading) {
           return <View><Text>Loading...</Text></View>;
         }
-        data = this.state.data;
-        // console.log(data)
+        teams = this.state.data['teams'];
+        // console.log(teams)
 
-        for(let i = 0; i < data.length; i++){
-          tableDataToDisplay = this.dataToTable(data[i]);
+        for(let i = 0; i < teams.length; i++){
+          tableDataToDisplay = this.dataToTable(teams[i]);
             tableRows.push(<Row data={tableDataToDisplay} key= {i} style={[styles.row, i%4 < 2 && {backgroundColor: '#ACD7EC'}]} textStyle={styles.text}/>)
         }
 
@@ -195,6 +195,20 @@ export class WeeklyPicksScreen extends React.Component {
                       onRefresh={this._onRefresh.bind(this)}
                     />
                   }>
+                  <TouchableOpacity onPress={Alert.alert("Thingy")}>
+                     <View>
+                          <Text style={{textAlign: 'center', 'color': '#083D77', fontWeight: 'bold', fontSize: 20}}> {data['pick']} </Text>
+                     </View>
+                  </TouchableOpacity><View>
+                  <View>
+                      <Text style={styles.summary}> Number of losers: {this.state.data['losers'].length}</Text>
+                  </View>
+                  <View>
+                      <Text style={styles.summary}> Number of losers if scores hold: {this.state.data['losers_if_scores_hold'].length}</Text>
+                  </View>
+                  <View>
+                      <Text style={styles.summary}> Penalties: {this.state.data['penalties'].length}</Text>
+                  </View>
                   <Table>
                     <Row data={tableHead} style={styles.head} textStyle={styles.text}/>
                       {tableRows}
@@ -220,6 +234,12 @@ const styles = StyleSheet.create({
   text: {
     flex: 1,
     fontSize: 15,
+    textAlign: 'center', 
+    textAlignVertical: 'center',
+  },
+  summary: {
+    flex: 1,
+    fontSize: 20,
     textAlign: 'center', 
     textAlignVertical: 'center',
   },
