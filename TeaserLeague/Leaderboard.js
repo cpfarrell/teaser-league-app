@@ -19,7 +19,6 @@ export class LeaderboardScreen extends React.Component {
     this.fetchData();
   }
 
-
   async fetchData() {
     const response = await fetch(REQUEST_URL);
     const responseData = await response.json();
@@ -43,7 +42,17 @@ export class LeaderboardScreen extends React.Component {
 
     const {navigate} = this.props.navigation;
 
-    // console.log(this.state)
+    // Make us refresh data on leaderboard stats every minute.
+    // This is terrible someone please make this better
+    // I (farrell) am a terrible engineer.
+    setInterval(
+       (function(self) {
+         return function() {
+           self.fetchData()
+         }
+       })(this),
+       60 * 1000);
+
     const mockAPIReturnValues = this.state.data;
 
     const columnTitles = ['Rank', 'Username', 'Won/Loss'];
