@@ -78,7 +78,7 @@ export class ListOfWeeksScreen extends React.Component {
         var allWeeks = [];
         for (var i =0;i< weekViewResponse.length; i++) {
             var weekNumber = weekViewResponse[i].week;
-            var weekWinLoss = parseInt(weekViewResponse[i].profit);
+            var weekWinLoss = parseInt(weekViewResponse[i].points);
             allWeeks.push(
                 <WeekDisplay 
                     key={i} 
