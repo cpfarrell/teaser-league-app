@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, StatusBar, ScrollView, CheckBox, TouchableOpacity, TouchableHighlight, Alert, Modal, RefreshControl } from 'react-native';
+import { StyleSheet, Text, View, Button, StatusBar, ScrollView, CheckBox, TouchableHighlight, TouchableOpacity, Alert, Modal, RefreshControl } from 'react-native';
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell, ListView } from 'react-native-table-component';
+import PopupDialog from 'react-native-popup-dialog';
 import { loadUser, loadIdToken } from './storage';
 import { DB_HOST} from './constants';
  
@@ -32,10 +33,11 @@ export class WeeklyPicksScreen extends React.Component {
       super(props);
       this.state = {
         'isLoading': true,
-        'pickCount': this.getPickCount(fake_data)
+        'pickCount': this.getPickCount(fake_data),
       }
       loadUser.bind(this)();
       loadIdToken.bind(this)();
+      this.popUpMapping = {}
     }
 
     getPickCount(data) {
@@ -98,7 +100,7 @@ export class WeeklyPicksScreen extends React.Component {
       this.setState({
             'data': responseData,
             'pickCount': pickCount,
-            'isLoading': false
+            'isLoading': false,
           });
     }
 
@@ -129,7 +131,6 @@ export class WeeklyPicksScreen extends React.Component {
         } else if (event['pick'] === 'X' || this.state.pickCount <4 ) {
           event['pick'] = event['pick'] === 'X' ? ' ' : 'X';
           this.setState((prevState, props) => {
-            // prevState.teamToPick[event['team']] = event['pick']
             prevState.pickCount += event['pick'] === 'X'?1:-1;
             return prevState;
           })
@@ -164,6 +165,23 @@ export class WeeklyPicksScreen extends React.Component {
         this.setState({week_number: nav_state.week_number, username: nav_state.username}, () => {this.fetchData()});
     }
 
+    constructUserListString(users) {
+        return users.join("\n")
+    }
+
+    popUpAbleText(users, message_text) {
+        return(
+            <View>
+                <PopupDialog ref={(popupDialog) => { this.popUpMapping[this.constructUserListString(users)] = popupDialog; }} width={0.65} height = {20*users.length}>
+                    <Text style = {styles.text}>{this.constructUserListString(users)}</Text>
+                </PopupDialog>
+                <TouchableHighlight onPress = {() => {this.popUpMapping[this.constructUserListString(users)].show();}}>
+                    <Text style={styles.summary}> {message_text}{users.length}</Text>
+                </TouchableHighlight>
+            </View>
+        )
+    }
+
     render() {
         var tableRows = [];
         if (this.state.isLoading) {
@@ -194,15 +212,9 @@ export class WeeklyPicksScreen extends React.Component {
                       onRefresh={this._onRefresh.bind(this)}
                     />
                   }>
-                  <View>
-                      <Text style={styles.summary}> Number of losers: {this.state.data['losers'].length}</Text>
-                  </View>
-                  <View>
-                      <Text style={styles.summary}> Number of losers if scores hold: {this.state.data['losers_if_scores_hold'].length}</Text>
-                  </View>
-                  <View>
-                      <Text style={styles.summary}> Penalties: {this.state.data['penalties'].length}</Text>
-                  </View>
+                  {this.popUpAbleText(this.state.data['losers'], 'Number of losers: ')}
+                  {this.popUpAbleText(this.state.data['losers_if_scores_hold'], 'Number of losers if scores hold: ')}
+                  {this.popUpAbleText(this.state.data['penalties'], 'Penalties: ')}
                   <Table>
                     <Row data={tableHead} style={styles.head} textStyle={styles.text}/>
                       {tableRows}

@@ -4,13 +4,20 @@ import { TabNavigator } from 'react-navigation';
 import { ListOfWeeksScreen } from './ListOfWeeks';
 import { WeeklyPicksScreen } from './WeeklyPicks';
 import { LeaderboardScreen } from './Leaderboard';
-import { LoginScreen } from './Login';
+// import { LoginScreen } from './Login';
 
 const RootTabNavigator = TabNavigator({
-  Login: {
-    screen: LoginScreen,
+  // Removing login screen as not used right now.
+  //  Login: {
+  // screen: LoginScreen,
+  // navigationOptions: {
+  // tabBarLabel: 'Login',
+  // },
+  // },
+  Leaderboard: {
+    screen: LeaderboardScreen,
     navigationOptions: {
-      tabBarLabel: 'Login',
+      tabBarLabel: 'Leaderboard',
     },
   },
   ListOfWeeks: {
@@ -25,13 +32,7 @@ const RootTabNavigator = TabNavigator({
       tabBarLabel: 'Weekly Picks',
     },
   },
-  Leaderboard: {
-    screen: LeaderboardScreen,
-    navigationOptions: {
-      tabBarLabel: 'Leaderboard',
-    },
-  },
-});
+    });
 
 
 export default class App extends React.Component {

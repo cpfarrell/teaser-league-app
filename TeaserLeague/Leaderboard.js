@@ -42,17 +42,6 @@ export class LeaderboardScreen extends React.Component {
 
     const {navigate} = this.props.navigation;
 
-    // Make us refresh data on leaderboard stats every minute.
-    // This is terrible someone please make this better
-    // I (farrell) am a terrible engineer.
-    setInterval(
-       (function(self) {
-         return function() {
-           self.fetchData()
-         }
-       })(this),
-       60 * 1000);
-
     const mockAPIReturnValues = this.state.data;
 
     const columnTitles = ['Rank', 'Username', 'Won/Loss'];
