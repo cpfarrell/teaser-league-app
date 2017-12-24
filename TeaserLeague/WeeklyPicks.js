@@ -25,7 +25,7 @@ var MAKE_PICKS_REQUEST_URL = 'http://' + DB_HOST + '/make_picks/';
 
 var username = 'Chris Farrell';
 var week_number = 2;
-var tableHead = ['Team', 'Game Time', 'Pick', 'Scores', 'Spread', '# Picks', 'Busted'];
+var tableHead = ['Team', 'Pick', 'Scores', 'Spread', '# Picks', 'Status'];
 var fake_data = [];
 
 export class WeeklyPicksScreen extends React.Component {
@@ -105,7 +105,9 @@ export class WeeklyPicksScreen extends React.Component {
     }
 
     dataToTable(data) {
-      if (!data['locked']) {
+      // When go back to making picks in the app then need to care about differentiating if game is selectable.
+      // if (!data['locked']) {
+      if (true) {
         pickable =  (
             <TouchableOpacity onPress={() =>this._handlePressPick(data)}>
                 <View>
@@ -121,7 +123,7 @@ export class WeeklyPicksScreen extends React.Component {
           )
         }
 
-      tabelData = [data['team'], data['game_time'], pickable, data['score'], data['spread'], data['picks'], data['busted']];
+      tabelData = [data['team'], pickable, data['score'], (data['spread']<=0 ? "": "+") + data['spread'], data['picks'], data['busted']];
       return tabelData;
     }
 
@@ -190,7 +192,7 @@ export class WeeklyPicksScreen extends React.Component {
         teams = this.state.data['teams'];
         console.log('Pulled teams')
         for(let i = 0; i < teams.length; i++){
-          tableDataToDisplay = this.dataToTable(teams[i]);
+            tableDataToDisplay = this.dataToTable(teams[i]);
             tableRows.push(<Row data={tableDataToDisplay} key= {i} style={[styles.row, i%4 < 2 && {backgroundColor: '#ACD7EC'}]} textStyle={styles.text}/>)
         }
 
@@ -215,6 +217,7 @@ export class WeeklyPicksScreen extends React.Component {
                   {this.popUpAbleText(this.state.data['losers'], 'Number of losers: ')}
                   {this.popUpAbleText(this.state.data['losers_if_scores_hold'], 'Number of losers if scores hold: ')}
                   {this.popUpAbleText(this.state.data['penalties'], 'Penalties: ')}
+                  {this.popUpAbleText(this.state.data['winners'], 'Winners in the clubhouse: ')}
                   <Table>
                     <Row data={tableHead} style={styles.head} textStyle={styles.text}/>
                       {tableRows}
