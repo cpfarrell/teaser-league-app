@@ -56,7 +56,7 @@ export class LeaderboardScreen extends React.Component {
 
     var fullValues = [];
     for(let i = 0; i < mockAPIReturnValues.length; i++){
-        fullValues.push([i+1, clickableUsername(mockAPIReturnValues[i]['username']), mockAPIReturnValues[i]['points'] + '$'])
+        fullValues.push([i+1, clickableUsername(mockAPIReturnValues[i]['username']), '$' + mockAPIReturnValues[i]['points']])
     }
 
     return (
