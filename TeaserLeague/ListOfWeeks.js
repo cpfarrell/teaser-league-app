@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Button, TouchableOpacity, ScrollView, Dimension
 import { loadUser } from './storage';
 import { DB_HOST} from './constants';
  
-var REQUEST_URL_BASE = 'http://' + DB_HOST + '/list_of_weeks/';
+var REQUEST_URL_BASE = 'http://' + DB_HOST + '/list_of_weeks/2017TL/';
 
 var ASYNC_STORAGE_USER_KEY = '@TeaserLeague:key';
 
@@ -71,7 +71,7 @@ export class ListOfWeeksScreen extends React.Component {
         var userNameToDisplay = this.state.username;
     	
      	if (this.state.isLoading) {
-			return <View><Text>Loading...</Text></View>;
+			return <View><Text>Loading Stiill...</Text></View>;
 	    }
 	    var weekViewResponse = this.state.data;
 

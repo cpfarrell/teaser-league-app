@@ -5,8 +5,8 @@ import PopupDialog from 'react-native-popup-dialog';
 import { loadUser, loadIdToken } from './storage';
 import { DB_HOST} from './constants';
  
-var REQUEST_URL = 'http://' + DB_HOST + '/weekly_picks/';
-var MAKE_PICKS_REQUEST_URL = 'http://' + DB_HOST + '/make_picks/';
+var REQUEST_URL = 'http://' + DB_HOST + '/weekly_picks/2017TL/';
+var MAKE_PICKS_REQUEST_URL = 'http://' + DB_HOST + '/make_picks/2017TL/';
 
 // A weekly pick consists of:
 // >> Week # at the top
@@ -187,7 +187,7 @@ export class WeeklyPicksScreen extends React.Component {
     render() {
         var tableRows = [];
         if (this.state.isLoading) {
-          return <View><Text>Loading...</Text></View>;
+          return <View><Text>Loading.......</Text></View>;
         }
         teams = this.state.data['teams'];
         console.log('Pulled teams')

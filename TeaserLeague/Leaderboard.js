@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, ScrollView, FlatList, TouchableOpacity, Refresh
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
 
 import { DB_HOST} from './constants';
-var REQUEST_URL = 'http://' + DB_HOST + '/leaderboard';
+var REQUEST_URL = 'http://' + DB_HOST + '/leaderboard/2017TL';
 
 
 export class LeaderboardScreen extends React.Component {
@@ -37,7 +37,7 @@ export class LeaderboardScreen extends React.Component {
 
   render() {
     if (this.state.isLoading) {
-      return <View><Text>Loading...</Text></View>;
+      return <View><Text>Loading Still...</Text></View>;
     }
 
     const {navigate} = this.props.navigation;
