@@ -1,14 +1,13 @@
-
 import React from 'react';
 import { AsyncStorage } from 'react-native';
 
-export var ASYNC_STORAGE_USER_KEY = '@AppOfCorn:username';
-export var ASYNC_STORAGE_TOKEN_KEY = '@AppOfCorn:id_token';
+export var ASYNC_STORAGE_USER_KEY = '@TeaserLeague:username';
+export var ASYNC_STORAGE_TOKEN_KEY = '@TeaserLeague:id_token';
 
 export async function loadUser() {
     try {
       const value = await AsyncStorage.getItem(ASYNC_STORAGE_USER_KEY);
-      this.setState({user: value})
+      this.setState({logged_in_user: value})
       if (value !== null){
         // We have data!!
         void(0);
