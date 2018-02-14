@@ -26,23 +26,8 @@ var REQUEST_URL = 'http://' + DB_HOST + '/leaderboard/2017TL';
 
 async function getRequestUrl() {
     dbHost = await getDBHost();
-    console.log(dbHost);
     return 'http://' + dbHost + '/leaderboard/2017TL';
 }
-
-//export class LeaderboardScreen extends React.Component {
-//    constructor(props) {
-//        super(props);
-//        this.state = {
-//        };
-//    }
-//
-//    render() {
-//        return (
-//                <Text>Leader peeder</Text>
-//               );
-//    }
-//}
 
 export class LeaderboardScreen extends React.Component {
   _navigate = (username) => {
@@ -54,11 +39,6 @@ export class LeaderboardScreen extends React.Component {
   };
 
   componentDidMount() {
-    //this.fetchData();
-    console.log('Taco truck');
-    console.log(this.dropdown == null);
-    console.log(this.dropdown != null);
-
     this.fetchData()
           .catch(((error) => {
               this.dropdown.alertWithType('error', 'Error', error.message);
@@ -91,21 +71,10 @@ async fetchData() {
             this.showErrorAlert(error)
             this.setErrorState();
         });
-
-    //const responseData = await response.json();
-    //this.setState({
-    //      'data': responseData,
-    //      'isLoading': false
-    //    });
   }
 
   _onRefresh() {
     this.setState({isLoading: true});
-    console.log("What");
-    console.log(this.dropdown.constructor.name);
-    console.log(this.dropdown == null);
-    //this.dropdown.alertWithType('error', 'Error', "Message");
-    //var error_handler = 
     this.fetchData()
           .catch((error) => {
               this.dropdown.alertWithType('error', 'Error', error.message);
@@ -113,7 +82,6 @@ async fetchData() {
               console.log("[ERROR] Fetching data failed");
           }
     );
-    //this.fetchData().catch(() =>  this.dropdown.alertWithType('error', 'Error', error));
   }
 
   _renderLoading() {
@@ -123,10 +91,6 @@ async fetchData() {
   }
 
   render() {
-    //if (this.state.isLoading) {
-    //  return <View><Text>Loading...</Text></View>;
-    //}
-
     const {navigate} = this.props.navigation;
 
     const mockAPIReturnValues = this.state.data || [];
@@ -173,19 +137,3 @@ async fetchData() {
   }
 }
 
-//const styles = StyleSheet.create({
-//  container: {
-//    flex: 1,
-//    backgroundColor: '#fff',
-//    alignItems: 'center',
-//    justifyContent: 'center',
-//  },
-//  text: {
-//    flex: 1,
-//    fontSize: 20,
-//    textAlign: 'center', 
-//    textAlignVertical: 'center',
-//  },
-//  head: { height: 50, backgroundColor: '#D6EDFF' },
-//  row: { height: 50 }
-//});
