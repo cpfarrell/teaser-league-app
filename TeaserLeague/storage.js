@@ -50,6 +50,7 @@ export async function loadDevMode() {
 }
 
 export async function storeDevMode(is_dev_mode) {
+    is_dev_mode = String(is_dev_mode);
     try {
         AsyncStorage.setItem(ASYNC_STORAGE_DEV_MODE_KEY, is_dev_mode);
     } catch (error) {
