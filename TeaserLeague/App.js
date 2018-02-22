@@ -30,8 +30,6 @@ const RootTabNavigator = TabNavigator({
             navigationOptions: {
                 tabBarLabel: 'Weeks',
                 tabBarIcon: <Icon type='ionicon' name='md-calendar' color='#FFFFFF' size={icon_size}/>,
-                //tabBarLabel: <Text style={{color: '#FFFFFF'}}>WOO</Text>
-                //tabBarLabel: <Image source={{uri: 'https://d30y9cdsu7xlg0.cloudfront.net/png/261714-200.png'}} style={{width: 28, height: 28, marginTop: 7}}></Image>
             },
         },
         WeeklyPicks: {
@@ -52,6 +50,7 @@ const RootTabNavigator = TabNavigator({
         },
     },
     {
+        initialRouteName: 'ListOfWeeks', // TODO: DELETE ME BECAUSE THIS IS TEMPORARY
         tabBarPosition: 'bottom',
         animationEnabled: true,
         tabBarOptions: {

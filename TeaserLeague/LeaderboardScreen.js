@@ -12,14 +12,13 @@ import {
     Table,
     Cell ,
     Col,
-    Cols,
     Row,
     Rows,
     TableWrapper
 } from 'react-native-table-component';
 import DropdownAlert from 'react-native-dropdownalert';
 
-import styles from './Style';
+import Styles from './Style';
 
 import {DB_HOST, getDBHost} from './constants';
 var REQUEST_URL = 'http://' + DB_HOST + '/leaderboard/2017TL';
@@ -84,11 +83,11 @@ async fetchData() {
     );
   }
 
-  _renderLoading() {
-    if (this.state.isLoading) {
-      return <View><Text>Loading...</Text></View>;
-    }
-  }
+  //_renderLoading() {
+  //  if (this.state.isLoading) {
+  //    return <View><Text>Loading...</Text></View>;
+  //  }
+  //}
 
   render() {
     const {navigate} = this.props.navigation;
@@ -112,7 +111,6 @@ async fetchData() {
 
     return (
         <View>
-        {this._renderLoading()}
         <ScrollView refreshControl={
                 <RefreshControl
                     refreshing={this.state.isLoading}
@@ -121,13 +119,11 @@ async fetchData() {
             }
         >
             <View>
-                <Text style={styles.styles.leaderboard_text}> Leaderboard Week 8</Text>
+                <Text style={Styles.styles.leaderboard_text}> Leaderboard Week 8</Text>
             </View>
-            <Table>
-                <Row data={columnTitles} style={styles.styles.leaderboard_head} textStyle={styles.styles.leaderboard_head_text} flexArr={[1, 2, 2]}/>
-                <TableWrapper style={{flexDirection: 'row'}}>
-                    <Rows data={fullValues} style={styles.styles.leaderboard_row} textStyle={styles.styles.leaderboard_text} flexArr={[1, 2, 2]}/>
-                </TableWrapper>
+            <Table borderStyle={Styles.tableBorderStyle}>
+                <Row data={columnTitles} style={Styles.styles.leaderboard_head} textStyle={Styles.styles.leaderboard_head_text} flexArr={[1, 2, 2]}/>
+                <Rows data={fullValues} style={Styles.styles.leaderboard_row} textStyle={Styles.styles.leaderboard_text} flexArr={[1, 2, 2]}/>
             </Table>
       </ScrollView>
         <DropdownAlert ref={ref => this.dropdown = ref} />

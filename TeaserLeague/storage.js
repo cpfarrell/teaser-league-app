@@ -2,9 +2,9 @@
 import React from 'react';
 import { AsyncStorage } from 'react-native';
 
-export var ASYNC_STORAGE_USER_KEY = '@AppOfCorn:username';
-export var ASYNC_STORAGE_TOKEN_KEY = '@AppOfCorn:id_token';
-export var ASYNC_STORAGE_DEV_MODE_KEY = '@AppOfCorn:dev_mode';
+export var ASYNC_STORAGE_USER_KEY = '@TeaserLeague:username';
+export var ASYNC_STORAGE_TOKEN_KEY = '@TeaserLeague:id_token';
+export var ASYNC_STORAGE_DEV_MODE_KEY = '@TeaserLeague:dev_mode';
 
 export async function loadUser() {
     try {
@@ -43,9 +43,7 @@ export async function loadIdToken() {
 }
 
 export async function loadDevMode() {
-    console.log('loadDevMode');
     const devModeStr = await AsyncStorage.getItem(ASYNC_STORAGE_DEV_MODE_KEY);
-    console.log(devModeStr);
     return devModeStr == 'true';
 }
 
