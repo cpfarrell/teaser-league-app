@@ -50,7 +50,7 @@ const RootTabNavigator = TabNavigator({
         },
     },
     {
-        initialRouteName: 'ListOfWeeks', // TODO: DELETE ME BECAUSE THIS IS TEMPORARY
+        initialRouteName: 'WeeklyPicks', // TODO: DELETE ME BECAUSE THIS IS TEMPORARY
         tabBarPosition: 'bottom',
         animationEnabled: true,
         tabBarOptions: {

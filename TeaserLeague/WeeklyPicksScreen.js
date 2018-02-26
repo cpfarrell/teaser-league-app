@@ -5,10 +5,8 @@ import PopupDialog from 'react-native-popup-dialog';
 import DropdownAlert from 'react-native-dropdownalert';
 import { loadUser, loadIdToken } from './storage';
 import { DB_HOST, getDBHost, placeholderUserName } from './constants';
+import Styles from './Style';
  
-//var REQUEST_URL = 'http://' + DB_HOST + '/weekly_picks/2017TL/';
-//var MAKE_PICKS_REQUEST_URL = 'http://' + DB_HOST + '/make_picks/2017TL/';
-
 async function getRequestUrl() {
     dbHost = await getDBHost();
     return 'http://' + dbHost + '/weekly_picks/2017TL/';
@@ -268,11 +266,27 @@ export class WeeklyPicksScreen extends React.Component {
             headerText += "Week " + this.state.week_number;
         }
         return (
-                <Text style={styles.userHeader}>
+                <Text style={[Styles.styles.leaderboard_text]}>
                     {headerText}
                 </Text>
         );
+    }
 
+    getHeaderTextString() {
+        var userNameToDisplay = this.state.username;
+        var headerText = "";
+        if (this.state.username == null || this.state.username == placeholderUserName ) {
+            headerText += "Your records, ";
+        } else {
+            headerText += this.state.username + ", ";
+        }
+
+        if (this.state.week_number == null ) {
+            headerText += "Week not selected";
+        } else {
+            headerText += "Week " + this.state.week_number;
+        }
+        return headerText;
     }
 
     render() {
@@ -297,13 +311,13 @@ export class WeeklyPicksScreen extends React.Component {
         let [penaltiesPopup, penaltiesTouchable] = this.newPopUpAbleText(this.state.data['penalties'], 'Penalties: ');
         let [winnersPopup, winnersTouchable] = this.newPopUpAbleText(this.state.data['winners'], 'Winners in the clubhouse: ');
 
+        /*flex is to make sure the save button isn't covered up by the tabs*/
         return (
-              <View>
+              <View style={{flex: 1}}>
                 {losersPopup}
                 {losersIfHoldPopup}
                 {penaltiesPopup}
                 {winnersPopup}
-                {this.getHeaderText()}
                 <ScrollView
                   refreshControl={
                     <RefreshControl
@@ -311,6 +325,8 @@ export class WeeklyPicksScreen extends React.Component {
                       onRefresh={this._onRefresh.bind(this)}
                     />
                   }>
+                  {this.getHeaderText()}
+                  <View style={{borderBottomColor: 'black', borderBottomWidth: 1}}/>
                   {losersTouchable}
                   {losersIfHoldTouchable}
                   {penaltiesTouchable}
@@ -369,8 +385,7 @@ const styles = StyleSheet.create({
       color: "#ffffff"
     },
   saveButton: {
-      flex: 1,
-      height: 160, // Make 60 again!
+      height: 60, // Make 60 again!
       fontWeight: 'bold',
       fontSize: 20,
       justifyContent: 'center',
