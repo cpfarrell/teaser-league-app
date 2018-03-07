@@ -49,7 +49,6 @@ export class WeeklyPicksScreen extends React.Component {
       loadUser.bind(this)();
       loadIdToken.bind(this)();
       this.popUpMapping = {}
-      this.newPopUpMapping = {}
     }
 
     getPickCount(data) {
@@ -241,16 +240,16 @@ export class WeeklyPicksScreen extends React.Component {
         return users.join("\n")
     }
 
-    newPopUpAbleText(users, message_text) {
+    popUpAbleText(users, message_text) {
         if (users == null) {
             return [null, null];
         }
         return [
-                <PopupDialog ref={(popupDialog) => { this.newPopUpMapping[this.constructUserListString(users)] = popupDialog; }} width={0.65} height = {20*users.length}>
+                <PopupDialog ref={(popupDialog) => { this.popUpMapping[this.constructUserListString(users)] = popupDialog; }} width={0.65} height = {20*users.length}>
                     <Text style = {styles.text}>{this.constructUserListString(users)}</Text>
                 </PopupDialog>
             ,
-                <TouchableHighlight onPress = {() => {this.newPopUpMapping[this.constructUserListString(users)].show();}} underlayColor='#CCCCCC'>
+                <TouchableHighlight onPress = {() => {this.popUpMapping[this.constructUserListString(users)].show();}} underlayColor='#CCCCCC'>
                     <Text style={styles.summary} > {message_text}{users.length}</Text>
                 </TouchableHighlight>
         ];
@@ -308,10 +307,10 @@ export class WeeklyPicksScreen extends React.Component {
             textStyle.push({backgroundColor: '#8e9199', color: '#dbdcdd'});
         }
 
-        let [losersPopup, losersTouchable] = this.newPopUpAbleText(this.state.data['losers'], 'Number of losers: ');
-        let [losersIfHoldPopup, losersIfHoldTouchable] = this.newPopUpAbleText(this.state.data['losers_if_scores_hold'], 'Number of losers if scores hold: ');
-        let [penaltiesPopup, penaltiesTouchable] = this.newPopUpAbleText(this.state.data['penalties'], 'Penalties: ');
-        let [winnersPopup, winnersTouchable] = this.newPopUpAbleText(this.state.data['winners'], 'Winners in the clubhouse: ');
+        let [losersPopup, losersTouchable] = this.popUpAbleText(this.state.data['losers'], 'Number of losers: ');
+        let [losersIfHoldPopup, losersIfHoldTouchable] = this.popUpAbleText(this.state.data['losers_if_scores_hold'], 'Number of losers if scores hold: ');
+        let [penaltiesPopup, penaltiesTouchable] = this.popUpAbleText(this.state.data['penalties'], 'Penalties: ');
+        let [winnersPopup, winnersTouchable] = this.popUpAbleText(this.state.data['winners'], 'Winners in the clubhouse: ');
 
         // TODO: move this to a function
         numPicksPopUp = (
@@ -341,10 +340,6 @@ export class WeeklyPicksScreen extends React.Component {
                   {losersIfHoldTouchable}
                   {penaltiesTouchable}
                   {winnersTouchable}
-                  {/*this.popUpAbleText(this.state.data['losers'], 'Number of losers: ')*/}
-                  {/*this.popUpAbleText(this.state.data['losers_if_scores_hold'], 'Number of losers if scores hold: ')*/}
-                  {/*this.popUpAbleText(this.state.data['penalties'], 'Penalties: ')*/}
-                  {/*this.popUpAbleText(this.state.data['winners'], 'Winners in the clubhouse: ')*/}
                   <Table>
                     <Row data={tableHead} style={styles.head} textStyle={styles.text}/>
                       {tableRows}
