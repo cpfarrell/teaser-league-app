@@ -44,6 +44,7 @@ export class WeeklyPicksScreen extends React.Component {
         'isLoading': true,
         'pickCount': this.getPickCount(fake_data),
         data: {teams: []},
+        usersWhoPicked: [],
       }
       loadUser.bind(this)();
       loadIdToken.bind(this)();
@@ -80,7 +81,6 @@ export class WeeklyPicksScreen extends React.Component {
       // Make sure the id_token has been loaded.
       await loadUser.bind(this)();
       await loadIdToken.bind(this)();
-      //console.log(event)
       const makePicksRequestUrl = await getMakePicksRequestUrl();
       fetch(makePicksRequestUrl + week_number + '/' + this.state.username, {
         method: 'POST',
@@ -168,7 +168,28 @@ export class WeeklyPicksScreen extends React.Component {
           )
         }
 
-      tabelData = [data['team'], pickable, data['score'], (data['spread']<=0 ? "": "+") + data['spread'], data['picks'], data['busted']];
+      // Without flex:0 the text isn't visible.
+      num_picks_touchable = (
+          <TouchableOpacity  onPress={() => {
+                  this.setState({usersWhoPicked: data['users_who_picked']});
+                  this.numPicksPopUpRef.show();
+              }}>
+              <View>
+                  <Text style={[styles.text, {flex:0}]}> {data['picks']}</Text>
+              </View>
+          </TouchableOpacity>
+      );
+
+
+      tabelData = [
+          data['team'],
+          pickable,
+          data['score'],
+          (data['spread']<=0 ? "": "+") + data['spread'],
+          //data['picks'],
+          num_picks_touchable,
+          data['busted']
+      ];
       return tabelData;
     }
 
@@ -220,22 +241,6 @@ export class WeeklyPicksScreen extends React.Component {
         return users.join("\n")
     }
 
-    //popUpAbleText(users, message_text) {
-    //    if (users == null) {
-    //        return;
-    //    }
-    //    return(
-    //        <View>
-    //            <PopupDialog ref={(popupDialog) => { this.popUpMapping[this.constructUserListString(users)] = popupDialog; }} width={0.65} height = {20*users.length}>
-    //                <Text style = {styles.text}>{this.constructUserListString(users)}</Text>
-    //            </PopupDialog>
-    //            <TouchableHighlight onPress = {() => {this.popUpMapping[this.constructUserListString(users)].show();}}>
-    //                <Text style={styles.summary}> {message_text}{users.length}</Text>
-    //            </TouchableHighlight>
-    //        </View>
-    //    )
-    //}
-    //<Text style={{fontSize: 20, textAlign: 'center', textAlignVertical: 'center'}} > {message_text}{users.length}</Text>
     newPopUpAbleText(users, message_text) {
         if (users == null) {
             return [null, null];
@@ -292,7 +297,6 @@ export class WeeklyPicksScreen extends React.Component {
     render() {
         var tableRows = [];
         teams = this.state.data['teams'] || []; // No data
-        console.log('Pulled teams')
         for(let i = 0; i < teams.length; i++){
             tableDataToDisplay = this.dataToTable(teams[i]);
             tableRows.push(<Row data={tableDataToDisplay} key= {i} style={[styles.row, i%4 < 2 && {backgroundColor: '#ACD7EC'}]} textStyle={styles.text}/>)
@@ -304,12 +308,17 @@ export class WeeklyPicksScreen extends React.Component {
             textStyle.push({backgroundColor: '#8e9199', color: '#dbdcdd'});
         }
 
-        //let vari = this.newPopUpAbleText(this.state.data['losers'], 'Number of losers: ');
-        //console.log("WAAAAA", vari ? vari.length : 'null vari');
         let [losersPopup, losersTouchable] = this.newPopUpAbleText(this.state.data['losers'], 'Number of losers: ');
         let [losersIfHoldPopup, losersIfHoldTouchable] = this.newPopUpAbleText(this.state.data['losers_if_scores_hold'], 'Number of losers if scores hold: ');
         let [penaltiesPopup, penaltiesTouchable] = this.newPopUpAbleText(this.state.data['penalties'], 'Penalties: ');
         let [winnersPopup, winnersTouchable] = this.newPopUpAbleText(this.state.data['winners'], 'Winners in the clubhouse: ');
+
+        // TODO: move this to a function
+        numPicksPopUp = (
+              <PopupDialog ref={(ref) => { this.numPicksPopUpRef = ref}} width={0.65} height={20*this.state.usersWhoPicked.length}>
+                  <Text style = {styles.text}>{this.constructUserListString(this.state.usersWhoPicked)}</Text>
+              </PopupDialog>
+        );
 
         /*flex is to make sure the save button isn't covered up by the tabs*/
         return (
@@ -318,6 +327,7 @@ export class WeeklyPicksScreen extends React.Component {
                 {losersIfHoldPopup}
                 {penaltiesPopup}
                 {winnersPopup}
+                {numPicksPopUp}
                 <ScrollView
                   refreshControl={
                     <RefreshControl
@@ -385,7 +395,7 @@ const styles = StyleSheet.create({
       color: "#ffffff"
     },
   saveButton: {
-      height: 60, // Make 60 again!
+      height: 60,
       fontWeight: 'bold',
       fontSize: 20,
       justifyContent: 'center',

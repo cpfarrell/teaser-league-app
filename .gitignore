@@ -4,3 +4,4 @@ npm-debug.*
 *~
 TeaserLeague/host.js
 TeaserLeague/package-lock.json
+*.swp
