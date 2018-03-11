@@ -20,12 +20,12 @@ import DropdownAlert from 'react-native-dropdownalert';
 
 import Styles from './Style';
 
-import {DB_HOST, getDBHost} from './constants';
-var REQUEST_URL = 'http://' + DB_HOST + '/leaderboard/2017TL';
+import {DB_HOST, getDBHost, DEFAULT_LEAGUE_NAME} from './constants';
+var REQUEST_URL = 'http://' + DB_HOST + '/leaderboard/' + DEFAULT_LEAGUE_NAME;
 
 async function getRequestUrl() {
     dbHost = await getDBHost();
-    return 'http://' + dbHost + '/leaderboard/2017TL';
+    return 'http://' + dbHost + '/leaderboard/' + DEFAULT_LEAGUE_NAME + '/';
 }
 
 export class LeaderboardScreen extends React.Component {
@@ -119,7 +119,7 @@ async fetchData() {
             }
         >
             <View>
-                <Text style={Styles.styles.leaderboard_text}> Leaderboard Week 8</Text>
+                <Text style={Styles.styles.leaderboard_text}> Leaderboard</Text>
             </View>
             <Table borderStyle={Styles.tableBorderStyle}>
                 <Row data={columnTitles} style={Styles.styles.leaderboard_head} textStyle={Styles.styles.leaderboard_head_text} flexArr={[1, 2, 2]}/>

@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, Button, TouchableOpacity, ScrollView, Dimensions, AsyncStorage, RefreshControl } from 'react-native';
 import DropdownAlert from 'react-native-dropdownalert';
 import { loadUser } from './storage';
-import { DB_HOST, getDBHost, placeholderUserName } from './constants';
+import { DB_HOST, getDBHost, placeholderUserName, DEFAULT_LEAGUE_NAME } from './constants';
 import { 
     Table,
     Cell,
@@ -16,7 +16,7 @@ import Styles from './Style';
  
 async function getRequestUrl(username) {
     dbHost = await getDBHost();
-    return 'http://' + dbHost + '/list_of_weeks/2017TL/' + username;
+    return 'http://' + dbHost + '/list_of_weeks/' + DEFAULT_LEAGUE_NAME + '/' + username  + '/';
 }
 
 var screenWidth = Dimensions.get('window').width;

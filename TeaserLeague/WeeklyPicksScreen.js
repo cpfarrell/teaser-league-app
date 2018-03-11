@@ -4,17 +4,17 @@ import { Table, TableWrapper, Row, Rows, Col, Cols, Cell, ListView } from 'react
 import PopupDialog from 'react-native-popup-dialog';
 import DropdownAlert from 'react-native-dropdownalert';
 import { loadUser, loadIdToken } from './storage';
-import { DB_HOST, getDBHost, placeholderUserName } from './constants';
+import { DB_HOST, getDBHost, placeholderUserName, DEFAULT_LEAGUE_NAME } from './constants';
 import Styles from './Style';
  
 async function getRequestUrl() {
     dbHost = await getDBHost();
-    return 'http://' + dbHost + '/weekly_picks/2017TL/';
+    return 'http://' + dbHost + '/weekly_picks/' + DEFAULT_LEAGUE_NAME + '/';
 }
 
 async function getMakePicksRequestUrl() {
     dbHost = await getDBHost();
-    return 'http://' + dbHost + '/make_picks/2017TL/';
+    return 'http://' + dbHost + '/make_picks/' + DEFAULT_LEAGUE_NAME + '/';
 }
 
 // A weekly pick consists of:
