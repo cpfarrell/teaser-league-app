@@ -146,7 +146,7 @@ export class ListOfWeeksScreen extends React.Component {
 
     async fetchUsersInALeagueAndSetState() {
         fetchUsersInALeague.bind(this)(DEFAULT_LEAGUE_NAME)
-            .then( result => {this.setState({userList: result}); console.log(result)})
+            .then( result => this.setState({userList: result}))
             .catch( error => {this.setState({userList: ['error: ' + error.message] }); console.log(error)});
     }
 
@@ -201,7 +201,6 @@ export class ListOfWeeksScreen extends React.Component {
                   });
               }}>
                   {this.state.userList.map( key => {
-                      console.log(key)
                       return (<Picker.Item label={key} value={key} key={key} />)
                   })}
             </Picker>

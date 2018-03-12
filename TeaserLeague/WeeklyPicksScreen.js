@@ -1,11 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, StatusBar, ScrollView, CheckBox, TouchableHighlight, TouchableOpacity, Alert, Modal, RefreshControl } from 'react-native';
+import { StyleSheet, Text, View, Button, StatusBar, ScrollView, CheckBox, TouchableHighlight, TouchableOpacity, Alert, Modal, RefreshControl, Picker } from 'react-native';
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell, ListView } from 'react-native-table-component';
 import PopupDialog from 'react-native-popup-dialog';
 import DropdownAlert from 'react-native-dropdownalert';
 import { loadUser, loadIdToken } from './storage';
 import { DB_HOST, getDBHost, placeholderUserName, DEFAULT_LEAGUE_NAME } from './constants';
 import Styles from './Style';
+import { fetchUsersInALeague } from './network';
  
 async function getRequestUrl() {
     dbHost = await getDBHost();
@@ -45,6 +46,7 @@ export class WeeklyPicksScreen extends React.Component {
         'pickCount': this.getPickCount(fake_data),
         data: {teams: []},
         usersWhoPicked: [],
+        userList: [],
       }
       loadUser.bind(this)();
       loadIdToken.bind(this)();
@@ -63,6 +65,7 @@ export class WeeklyPicksScreen extends React.Component {
 
     componentDidMount() {
       this.fetchData();
+      this.fetchUsersInALeagueAndSetState();
     }
 
     getTeamList(teamToPick) {
@@ -293,6 +296,28 @@ export class WeeklyPicksScreen extends React.Component {
         return headerText;
     }
 
+    async fetchUsersInALeagueAndSetState() {
+        fetchUsersInALeague.bind(this)(DEFAULT_LEAGUE_NAME)
+            .then( result => this.setState({userList: result}))
+            .catch( error => {this.setState({userList: ['error: ' + error.message] }); console.log(error)});
+    }
+
+    getUserPicker() {
+        return (
+            <Picker
+              selectedValue={this.state.username}
+              onValueChange={(itemValue, itemIndex) => {
+                  this.setState({isLoading: true, username: itemValue}, () => {
+                      this.fetchData();
+                  });
+              }}>
+                  {this.state.userList.map( key => {
+                      return (<Picker.Item label={key} value={key} key={key} />)
+                  })}
+            </Picker>
+        );
+    }
+
     render() {
         var tableRows = [];
         teams = this.state.data['teams'] || []; // No data
@@ -335,6 +360,10 @@ export class WeeklyPicksScreen extends React.Component {
                     />
                   }>
                   {this.getHeaderText()}
+                  <View style={{flex: 1, flexDirection: 'row'}}>
+                    <View>{this.getUserPicker()}</View>
+                    <View>{this.getUserPicker()}</View>
+                  </View>
                   <View style={{borderBottomColor: 'black', borderBottomWidth: 1}}/>
                   {losersTouchable}
                   {losersIfHoldTouchable}
