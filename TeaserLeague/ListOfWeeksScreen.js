@@ -24,7 +24,7 @@ import {
     TableWrapper
 } from 'react-native-table-component';
 import Styles from './Style';
-import { fetchUsers } from './network';
+import { fetchUsersInALeague } from './network';
  
 async function getRequestUrl(username) {
     dbHost = await getDBHost();
@@ -115,7 +115,7 @@ export class ListOfWeeksScreen extends React.Component {
 	componentDidMount() {
 		console.log("did mount");
 		this.fetchData(); 
-        this.fetchUsersForLeague();
+        this.fetchUsersInALeagueAndSetState();
 	}
 
     showErrorAlert(error) {
@@ -144,8 +144,8 @@ export class ListOfWeeksScreen extends React.Component {
             });
 	}
 
-    async fetchUsersForLeague() {
-        fetchUsers.bind(this)(DEFAULT_LEAGUE_NAME)
+    async fetchUsersInALeagueAndSetState() {
+        fetchUsersInALeague.bind(this)(DEFAULT_LEAGUE_NAME)
             .then( result => {this.setState({userList: result}); console.log(result)})
             .catch( error => {this.setState({userList: ['error: ' + error.message] }); console.log(error)});
     }

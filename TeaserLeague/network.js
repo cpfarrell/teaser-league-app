@@ -1,9 +1,10 @@
+import { getDBHost } from './constants';
 
-var USER_LIST_URL = 'http://10.0.100.218:5000/users';
-
-export async function fetchUsers(league) {
-    console.log("GO:" + USER_LIST_URL + '/' + league)
-    return fetch(USER_LIST_URL + '/' + league)
+export async function fetchUsersInALeague(league) {
+    dbHost = await getDBHost();
+    url = 'http://' + dbHost + '/users/' + league;
+    console.log("GO:" + url)
+    return fetch(url)
         .then( response => response.json());
         //.then( result => {this.setState({userList: result}); console.log(result)})
         //.catch( error => this.setState({userList: ['error: ' + error.message] }));
