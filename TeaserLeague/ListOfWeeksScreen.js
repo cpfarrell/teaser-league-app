@@ -1,5 +1,16 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, TouchableOpacity, ScrollView, Dimensions, AsyncStorage, RefreshControl } from 'react-native';
+import { 
+    AsyncStorage,
+    Button,
+    Dimensions,
+    Picker,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from 'react-native';
 import DropdownAlert from 'react-native-dropdownalert';
 import { loadUser } from './storage';
 import { DB_HOST, getDBHost, placeholderUserName, DEFAULT_LEAGUE_NAME } from './constants';
@@ -13,6 +24,7 @@ import {
     TableWrapper
 } from 'react-native-table-component';
 import Styles from './Style';
+import { fetchUsers } from './network';
  
 async function getRequestUrl(username) {
     dbHost = await getDBHost();
@@ -94,7 +106,8 @@ export class ListOfWeeksScreen extends React.Component {
 		 super(props);
 		 this.state = {
              "isLoading": true,
-             "username": placeholderUserName 
+             "username": placeholderUserName,
+             userList: []
          };
          loadUser.bind(this)().then( () => {this.fetchData() });
 	}
@@ -102,6 +115,7 @@ export class ListOfWeeksScreen extends React.Component {
 	componentDidMount() {
 		console.log("did mount");
 		this.fetchData(); 
+        this.fetchUsersForLeague();
 	}
 
     showErrorAlert(error) {
@@ -129,6 +143,12 @@ export class ListOfWeeksScreen extends React.Component {
                 this.setErrorState();
             });
 	}
+
+    async fetchUsersForLeague() {
+        fetchUsers.bind(this)(DEFAULT_LEAGUE_NAME)
+            .then( result => {this.setState({userList: result}); console.log(result)})
+            .catch( error => {this.setState({userList: ['error: ' + error.message] }); console.log(error)});
+    }
 
     _onRefresh() {
       this.setState({isLoading: true});
@@ -169,6 +189,23 @@ export class ListOfWeeksScreen extends React.Component {
                 </Text>
         );
 
+    }
+
+    renderUserPicker() {
+        return (
+            <Picker
+              selectedValue={this.state.username}
+              onValueChange={(itemValue, itemIndex) => {
+                  this.setState({isLoading: true, username: itemValue}, () => {
+                      this.fetchData();
+                  });
+              }}>
+                  {this.state.userList.map( key => {
+                      console.log(key)
+                      return (<Picker.Item label={key} value={key} key={key} />)
+                  })}
+            </Picker>
+        );
     }
 
     render() {
@@ -226,6 +263,7 @@ export class ListOfWeeksScreen extends React.Component {
                         />
                      }>
                         {headerText}
+                        {this.renderUserPicker()}
                         <Table borderStyle={Styles.tableBorderStyle}>
                           {/*<Row key={-1} data={['Week', 'Win/Loss', 'Running']} flexArr={[1,1,1]}/>*/}
                           <Row data={['Week', 'Win/Loss', 'Running']} style={Styles.styles.leaderboard_head} textStyle={Styles.styles.leaderboard_head_text} flexArr={[1,1,1]}/>
