@@ -46,6 +46,7 @@ class WeekCell extends React.Component {
         );
     }
     _handlePress() {
+        console.log("ListOfWeeks: this WeekCell upon click has username: ", this.props.username);
         var {week_id, username, navigate} = this.props;
         navigate('WeeklyPicks', {week_number: week_id, username: username});
     }
@@ -60,7 +61,7 @@ class DollarDisplayCell extends React.Component {
         return (
             <TouchableOpacity onPress={this._handlePress.bind(this)} delayPressIn={200}>
                 <Text style={[Styles.styles.weeks_row_win, this.props.dollarAmount < 0 && Styles.styles.weeks_row_loss]}>
-                    {amountToDisplay}
+                    {amountToDisplay} 
                 </Text>
             </TouchableOpacity>
         );
@@ -79,34 +80,13 @@ function integerToFormattedDollarString(dollarValue) {
     }
 }
 
-class WeekDisplay extends React.Component {
-    render() {
-        var amountToDisplay = "";
-        if (typeof this.props.weekWinLoss != 'undefined') {
-            amountToDisplay = "$" + this.props.weekWinLoss;
-        }
-        return (
-            <TouchableOpacity onPress={this._handlePress.bind(this)} >
-                <Text style={[styles.weekDisplayWon, this.props.weekWinLoss < 0 && styles.weekDisplayLoss]}>
-                    {this.props.weekNumberString}{"\n"}
-                    {amountToDisplay}
-                </Text>
-            </TouchableOpacity>
-        );
-    }
-    _handlePress() {
-        var {week_id, username, navigate} = this.props;
-        navigate('WeeklyPicks', {week_number: week_id, username: username});
-    }
-}
-
 export class ListOfWeeksScreen extends React.Component {
 
 	constructor(props) {
 		 super(props);
 		 this.state = {
-             "isLoading": true,
-             "username": placeholderUserName,
+             isLoading: true,
+             username: placeholderUserName,
              userList: []
          };
          loadUser.bind(this)().then( () => {this.fetchData() });
@@ -159,6 +139,7 @@ export class ListOfWeeksScreen extends React.Component {
     componentWillReceiveProps(nextProps) {
         var nav_state = nextProps.navigation.state.params;
         //this.setState({username: nav_state.selected_username}, () => {this.fetchData()});
+        console.log("ListOfWeeks screen just 'componenetWillReceiveProps'");
         this.setState({
             username: nav_state.selected_username,
             isLoading: true
@@ -196,8 +177,11 @@ export class ListOfWeeksScreen extends React.Component {
             <Picker
               selectedValue={this.state.username}
               onValueChange={(itemValue, itemIndex) => {
+                  console.log("Picker is about to set username to ", itemValue);
                   this.setState({isLoading: true, username: itemValue}, () => {
                       this.fetchData();
+                      //console.log("Here is the state of the ListOfWeeks, unless its the Picker...");
+                      //console.log(this.state);
                   });
               }}>
                   {this.state.userList.map( key => {
@@ -221,23 +205,12 @@ export class ListOfWeeksScreen extends React.Component {
 	    //}
 	    var weekViewResponse = this.state.data || [];
 
-        var allWeeks = [];
         var weekPayload = [];
         var runningWinLoss = 0;
         for (var i =0;i< weekViewResponse.length; i++) {
             var weekNumber = weekViewResponse[i].week;
             var weekWinLoss = parseInt(weekViewResponse[i].points);
             runningWinLoss += weekWinLoss;
-            allWeeks.push(
-                <WeekDisplay 
-                    key={i} 
-                    week_id={weekNumber}
-                    weekNumberString={weekNumber} 
-                    weekWinLoss={weekWinLoss} 
-                    username={userNameToDisplay}
-                    navigate={navigate}
-                />
-            );
             weekPayload.push({
                 key: i,
                 week_id: weekNumber,
@@ -262,6 +235,7 @@ export class ListOfWeeksScreen extends React.Component {
                         />
                      }>
                         {headerText}
+                        <Text> "{this.state.username}"</Text>
                         {this.renderUserPicker()}
                         <Table borderStyle={Styles.tableBorderStyle}>
                           {/*<Row key={-1} data={['Week', 'Win/Loss', 'Running']} flexArr={[1,1,1]}/>*/}
@@ -280,12 +254,14 @@ export class ListOfWeeksScreen extends React.Component {
     }
 
     getWeekAndDollarDisplay(row) {
+        //console.log("getWeekAndDollarDisplay for a row");
+        //console.log(row);
 
         return [
                 <WeekCell
                     week_id={row.week_id}
                     weekWinLoss={row.weekWinLoss} 
-                    username={row.userNameToDisplay}
+                    username={row.username}
                     navigate={row.navigate}
                 />
             ,
@@ -293,14 +269,14 @@ export class ListOfWeeksScreen extends React.Component {
                 <DollarDisplayCell
                     week_id={row.week_id}
                     dollarAmount={row.weekWinLoss} 
-                    username={row.userNameToDisplay}
+                    username={row.username}
                     navigate={row.navigate}
                 />
             ,
                 <DollarDisplayCell
                     week_id={row.week_id}
                     dollarAmount={row.runningWinLoss} 
-                    username={row.userNameToDisplay}
+                    username={row.username}
                     navigate={row.navigate}
                 />
             

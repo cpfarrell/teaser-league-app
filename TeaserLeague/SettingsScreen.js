@@ -1,15 +1,19 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, StatusBar, ScrollView, AsyncStorage, Alert, TextInput, TouchableHighlight, Switch } from 'react-native';
+import { Picker, StyleSheet, Text, View, Button, StatusBar, ScrollView, AsyncStorage, Alert, TextInput, TouchableHighlight, Switch } from 'react-native';
 import { loadUser, ASYNC_STORAGE_USER_KEY, ASYNC_STORAGE_TOKEN_KEY } from './storage';
 import { DB_HOST, getDBHost } from './constants';
 import { storeDevMode, loadDevMode } from './storage';
 
 var LOGIN_URL = 'http://' + DB_HOST + '/login';
+var USER_LIST_URL = 'http://10.0.100.218:5000/users/2017TL'
 
 export class SettingsScreen extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {user: "no_user_X"};
+        this.state = {
+            user: "no_user_X",
+            userList: []
+        };
         loadUser.bind(this)();
         this.showAsyncStorageKeys();
     }
@@ -34,12 +38,6 @@ export class SettingsScreen extends React.Component {
 
     }
 
-    //readDbHost() {
-    //    getDBHost()
-    //        .then( (result) => this.setState({dbHost: result}) )
-    //        .catch( (error) => console.log(error.message));
-    //}
-
     async setupLocalStateGivenDevMode() {
         getDBHost()
             .then((result) => this.setState({dbHost: result}) )
@@ -50,7 +48,6 @@ export class SettingsScreen extends React.Component {
     }
 
     componentDidMount() {
-        //this.readDbHost();
         this.setupLocalStateGivenDevMode();
     }
 
@@ -107,6 +104,21 @@ export class SettingsScreen extends React.Component {
                     }} />
                     <Text>{this.state.dbHost}</Text>
                 </View>
+                <Button title="Get Users" onPress={ () => {
+                    console.log("RUN");
+                    console.log("DONE");
+                }} color='#083D77'/>
+                <Text>Check console log: {this.state.fr} . {this.state.fe}</Text>
+            <Picker
+              selectedValue={this.state.language}
+              onValueChange={(itemValue, itemIndex) => this.setState({language: itemValue})}>
+              {this.state.userList.map( key => {
+                  console.log(key)
+                  return (<Picker.Item label={key} value={key} key={key} />)
+              })}
+              <Picker.Item label="Java" value="java" />
+              <Picker.Item label="JavaScript" value="js" />
+            </Picker>
             </View>
        );
     }
