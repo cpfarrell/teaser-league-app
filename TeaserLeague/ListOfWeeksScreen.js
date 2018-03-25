@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import DropdownAlert from 'react-native-dropdownalert';
 import { loadUser } from './storage';
-import { DB_HOST, getDBHost, placeholderUserName, DEFAULT_LEAGUE_NAME } from './constants';
+import { DB_HOST, getDBHost, placeholderUserName } from './constants';
 import { 
     Table,
     Cell,
@@ -25,10 +25,12 @@ import {
 } from 'react-native-table-component';
 import Styles from './Style';
 import { fetchUsersInALeague } from './network';
+import { loadCurrentlyActiviteLeague } from './storage';
  
 async function getRequestUrl(username) {
     dbHost = await getDBHost();
-    return 'http://' + dbHost + '/list_of_weeks/' + DEFAULT_LEAGUE_NAME + '/' + username  + '/';
+    activeLeague = await loadCurrentlyActiviteLeague();
+    return 'http://' + dbHost + '/list_of_weeks/' + activeLeague + '/' + username  + '/';
 }
 
 var screenWidth = Dimensions.get('window').width;
@@ -125,7 +127,8 @@ export class ListOfWeeksScreen extends React.Component {
 	}
 
     async fetchUsersInALeagueAndSetState() {
-        fetchUsersInALeague.bind(this)(DEFAULT_LEAGUE_NAME)
+        activeLeague = await loadCurrentlyActiviteLeague();
+        fetchUsersInALeague.bind(this)(activeLeague)
             .then( result => this.setState({userList: result}))
             .catch( error => {this.setState({userList: ['error: ' + error.message] }); console.log(error)});
     }

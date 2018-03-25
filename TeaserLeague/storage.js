@@ -4,12 +4,13 @@ import { AsyncStorage } from 'react-native';
 
 export var ASYNC_STORAGE_USER_KEY = '@TeaserLeague:username';
 export var ASYNC_STORAGE_TOKEN_KEY = '@TeaserLeague:id_token';
+export var ASYNC_STORAGE_LEAGUE_ID_KEY = '@TeaserLeague:league_id';
 export var ASYNC_STORAGE_DEV_MODE_KEY = '@TeaserLeague:dev_mode';
 
 export async function loadUser() {
     try {
       const value = await AsyncStorage.getItem(ASYNC_STORAGE_USER_KEY);
-      this.setState({user: value})
+      this.setState({loggedInUser: value})
       if (value !== null){
         // We have data!!
         void(0);
@@ -51,6 +52,24 @@ export async function storeDevMode(is_dev_mode) {
     is_dev_mode = String(is_dev_mode);
     try {
         AsyncStorage.setItem(ASYNC_STORAGE_DEV_MODE_KEY, is_dev_mode);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function loadCurrentlyActiviteLeague() {
+    try {
+      //const league = await AsyncStorage.getItem(ASYNC_STORAGE_LEAGUE_ID_KEY);
+      return AsyncStorage.getItem(ASYNC_STORAGE_LEAGUE_ID_KEY);
+    } catch (error) {
+        console.log("[ERROR] Error fetching stored league from persistent storage.");
+        console.log(error);
+    }
+}
+
+export async function storeCurrentlyActiviteLeague(leagueId) {
+    try {
+        AsyncStorage.setItem(ASYNC_STORAGE_LEAGUE_ID_KEY, leagueId);
     } catch (error) {
         console.log(error);
     }

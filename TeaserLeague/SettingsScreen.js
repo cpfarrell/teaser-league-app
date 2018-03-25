@@ -2,20 +2,32 @@ import React from 'react';
 import { Picker, StyleSheet, Text, View, Button, StatusBar, ScrollView, AsyncStorage, Alert, TextInput, TouchableHighlight, Switch } from 'react-native';
 import { loadUser, ASYNC_STORAGE_USER_KEY, ASYNC_STORAGE_TOKEN_KEY } from './storage';
 import { DB_HOST, getDBHost } from './constants';
-import { storeDevMode, loadDevMode } from './storage';
+import { storeDevMode, loadDevMode, loadCurrentlyActiviteLeague, storeCurrentlyActiviteLeague } from './storage';
 
 var LOGIN_URL = 'http://' + DB_HOST + '/login';
 var USER_LIST_URL = 'http://10.0.100.218:5000/users/2017TL'
+
+async function getLeaguesUserIsInUrl(userId) {
+    dbHost = await getDBHost();
+    return 'http://' + dbHost + '/leagues/' + userId;
+}
 
 export class SettingsScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            user: "no_user_X",
-            userList: []
+            loggedInUsername: "Chris Farrell",
+            userList: [],
+            leagueList: ['tacos'],
+            activeLeague: null
+
         };
+
+        this.loadingLeagues = false;
         loadUser.bind(this)();
         this.showAsyncStorageKeys();
+        loadCurrentlyActiviteLeague()
+            .then( result => this.setState({activeLeague: result}) );
     }
 
   async showAsyncStorageKeys() {
@@ -34,8 +46,37 @@ export class SettingsScreen extends React.Component {
     }
 
     getUser() {
-        return this.state.user;
+        return this.state.loggedInUsername;
 
+    }
+
+    async loadLeagues() {
+        requestUrl = await getLeaguesUserIsInUrl(this.state.loggedInUsername);
+        console.log("RequestUrl:", requestUrl);
+
+        // I wonder if it's easy to prevent simultaneous requests. Yup!
+        if (this.loadingLeagues == true) {
+            console.log("Already loading...");
+            return;
+        }
+        this.loadingLeagues = true;
+
+        fetch(requestUrl)
+            .then( response => response.json())
+            .then( responseJson => { 
+                console.log("taco...");
+                console.log(responseJson);
+                this.setState({
+                    leagueList: responseJson
+                })
+                this.loadingLeagues = false;
+            })
+            .catch(error => {
+                // this don't exist...
+                this.showErrorAlert(error)
+                this.setErrorState();
+                this.loadingLeagues = false;
+            });
     }
 
     async setupLocalStateGivenDevMode() {
@@ -45,6 +86,7 @@ export class SettingsScreen extends React.Component {
         loadDevMode()
             .then((result) => this.setState({localDevMode: result}))
             .catch((error) => console.log(error.message));
+        this.loadLeagues();
     }
 
     componentDidMount() {
@@ -95,8 +137,28 @@ export class SettingsScreen extends React.Component {
                 />
                 <Button title="Submit" onPress={authenticateAndStoreUser} color='#083D77'/>
                 <Text>Currently logged in user: {this.getUser()}</Text>
+                <Text>Current league: {this.state.activeLeague}</Text>
 
-                <View style={{marginTop: 100}}>
+                {/* Leagues a User is in */}
+                <View style={{marginTop: 50}}>
+                    <Text style={{fontSize: 20}} >Your Teaser Leagues</Text>
+                    <Text>Active League: {this.state.activeLeague}</Text>
+                    <Picker
+                      selectedValue={this.state.activeLeague}
+                      onValueChange={(itemValue, itemIndex) => {
+                          console.log("Storing active league:", itemValue);
+                          this.setState({activeLeague: itemValue});
+                          storeCurrentlyActiviteLeague(itemValue);
+                      }}>
+                        {this.state.leagueList.map(league => {
+                                return (<Picker.Item label={league} value={league} key={league} />)
+                        })}
+                      <Picker.Item label="Java" value="java" />
+                      <Picker.Item label="JavaScript" value="js" />
+                    </Picker>
+                </View>
+
+                <View style={{marginTop: 50}}>
                     <Text style={{fontSize: 20}} >Developer Mode</Text>
                     <Switch value={this.state.localDevMode} onValueChange={(val) => { 
                         storeDevMode(val)
@@ -109,16 +171,6 @@ export class SettingsScreen extends React.Component {
                     console.log("DONE");
                 }} color='#083D77'/>
                 <Text>Check console log: {this.state.fr} . {this.state.fe}</Text>
-            <Picker
-              selectedValue={this.state.language}
-              onValueChange={(itemValue, itemIndex) => this.setState({language: itemValue})}>
-              {this.state.userList.map( key => {
-                  console.log(key)
-                  return (<Picker.Item label={key} value={key} key={key} />)
-              })}
-              <Picker.Item label="Java" value="java" />
-              <Picker.Item label="JavaScript" value="js" />
-            </Picker>
             </View>
        );
     }

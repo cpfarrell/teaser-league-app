@@ -20,12 +20,13 @@ import DropdownAlert from 'react-native-dropdownalert';
 
 import Styles from './Style';
 
-import {DB_HOST, getDBHost, DEFAULT_LEAGUE_NAME} from './constants';
-var REQUEST_URL = 'http://' + DB_HOST + '/leaderboard/' + DEFAULT_LEAGUE_NAME;
+import {DB_HOST, getDBHost } from './constants';
+import { loadCurrentlyActiviteLeague } from './storage';
 
 async function getRequestUrl() {
     dbHost = await getDBHost();
-    return 'http://' + dbHost + '/leaderboard/' + DEFAULT_LEAGUE_NAME + '/';
+    activeLeague = await loadCurrentlyActiviteLeague();
+    return 'http://' + dbHost + '/leaderboard/' + activeLeague + '/';
 }
 
 export class LeaderboardScreen extends React.Component {

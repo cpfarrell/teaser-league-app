@@ -4,18 +4,21 @@ import { Table, TableWrapper, Row, Rows, Col, Cols, Cell, ListView } from 'react
 import PopupDialog from 'react-native-popup-dialog';
 import DropdownAlert from 'react-native-dropdownalert';
 import { loadUser, loadIdToken } from './storage';
-import { DB_HOST, getDBHost, placeholderUserName, DEFAULT_LEAGUE_NAME } from './constants';
+import { DB_HOST, getDBHost, placeholderUserName } from './constants';
 import Styles from './Style';
 import { fetchUsersInALeague, fetchWeeksInALeague } from './network';
+import { loadCurrentlyActiviteLeague } from './storage';
  
 async function getRequestUrl() {
     dbHost = await getDBHost();
-    return 'http://' + dbHost + '/weekly_picks/' + DEFAULT_LEAGUE_NAME + '/';
+    activeLeague = await loadCurrentlyActiviteLeague();
+    return 'http://' + dbHost + '/weekly_picks/' + activeLeague + '/';
 }
 
 async function getMakePicksRequestUrl() {
     dbHost = await getDBHost();
-    return 'http://' + dbHost + '/make_picks/' + DEFAULT_LEAGUE_NAME + '/';
+    activeLeague = await loadCurrentlyActiviteLeague();
+    return 'http://' + dbHost + '/make_picks/' + activeLeague + '/';
 }
 
 // A weekly pick consists of:
@@ -238,6 +241,7 @@ export class WeeklyPicksScreen extends React.Component {
     // When we nave navigated to this screen.
     componentWillReceiveProps(nextProps) {
         var nav_state = nextProps.navigation.state.params;
+        console.log("The week is " + nav_state.week_number + ". Username: " + nav_state.username)
         this.setState({
             week_number: nav_state.week_number,
             username: nav_state.username ? nav_state.username : this.state.username,
@@ -303,9 +307,9 @@ export class WeeklyPicksScreen extends React.Component {
     }
 
     async fetchUsersInALeagueAndSetState() {
-        console.log('-----', DEFAULT_LEAGUE_NAME);
         this.setState({isLoading: true});
-        await fetchUsersInALeague.bind(this)(DEFAULT_LEAGUE_NAME)
+        activeLeague = await loadCurrentlyActiviteLeague();
+        await fetchUsersInALeague.bind(this)(activeLeague)
             .then( result => {
                 this.setState({userList: result, isLoading: false});
                 console.log('>>>', this.state.username);
@@ -321,7 +325,8 @@ export class WeeklyPicksScreen extends React.Component {
 
     async fetchWeeksInALeagueAndSetState() {
         this.setState({isLoading: true, numWeeksLoaded: false});
-        await fetchWeeksInALeague.bind(this)(DEFAULT_LEAGUE_NAME)
+        activeLeague = await loadCurrentlyActiviteLeague();
+        await fetchWeeksInALeague.bind(this)(activeLeague)
             .then( result => {
                 this.setState({numWeeks: result['num_weeks'], isLoading: false});
                 this.setState({numWeeksLoaded: true});
