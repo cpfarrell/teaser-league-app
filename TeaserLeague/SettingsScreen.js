@@ -153,8 +153,6 @@ export class SettingsScreen extends React.Component {
                         {this.state.leagueList.map(league => {
                                 return (<Picker.Item label={league} value={league} key={league} />)
                         })}
-                      <Picker.Item label="Java" value="java" />
-                      <Picker.Item label="JavaScript" value="js" />
                     </Picker>
                 </View>
 
