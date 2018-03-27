@@ -46,8 +46,10 @@ export class WeeklyPicksScreen extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
-        'isLoading': false,
-        'pickCount': this.getPickCount(fake_data),
+        isLoading: false,
+        userPickerLoading: false,
+        weekPickerLoading: false,
+        pickCount: this.getPickCount(fake_data),
         data: {teams: []},
         usersWhoPicked: [],
         userList: [],
@@ -78,7 +80,7 @@ export class WeeklyPicksScreen extends React.Component {
         .then(
           this.fetchUsersInALeagueAndSetState()
               .then( () => {
-                  this.setState({}, () => this.fetchData());
+                  this.setState({isLoading: true}, () => this.fetchData());
               })
               .catch(error => console.log('!!', error.message))
         )
@@ -145,16 +147,21 @@ export class WeeklyPicksScreen extends React.Component {
             this.setState({isLoading:false});
             return;
         }
+        console.log("Boolean values 1:")
+        console.log(this.state.isLoading, this.state.userPickerLoading, this.state.weekPickerLoading);
         fetch(requestUrl + this.state.week_number + '/' + this.state.username)
             .then( response => response.json())
             .then( responseJson => { 
                 pickCount = this.getPickCount(responseJson)
+                console.log("Boolean values 2:")
+                console.log(this.state.isLoading, this.state.userPickerLoading, this.state.weekPickerLoading);
                 this.setState({
                     data: responseJson,
                     pickCount: pickCount,
                     isLoading: false,
                 })
             })
+            .then( () => console.log("Fetch done!") )
             .catch(error => {
                 this.showErrorAlert(error)
                 this.setErrorState();
@@ -236,6 +243,8 @@ export class WeeklyPicksScreen extends React.Component {
       this.fetchData().then(() => {
         this.setState({isLoading: false});
       });
+      this.fetchUsersInALeagueAndSetState();
+      this.fetchWeeksInALeagueAndSetState();
     }
 
     // When we nave navigated to this screen.
@@ -307,11 +316,11 @@ export class WeeklyPicksScreen extends React.Component {
     }
 
     async fetchUsersInALeagueAndSetState() {
-        this.setState({isLoading: true});
+        this.setState({userPickerLoading: true});
         activeLeague = await loadCurrentlyActiviteLeague();
         await fetchUsersInALeague.bind(this)(activeLeague)
             .then( result => {
-                this.setState({userList: result, isLoading: false});
+                this.setState({userList: result, userPickerLoading: false});
                 console.log('>>>', this.state.username);
                 if (this.state.username == null) {
                     console.log('Saw null username');
@@ -324,13 +333,13 @@ export class WeeklyPicksScreen extends React.Component {
     }
 
     async fetchWeeksInALeagueAndSetState() {
-        this.setState({isLoading: true, numWeeksLoaded: false});
+        this.setState({weekPickerLoading: true, numWeeksLoaded: false});
         activeLeague = await loadCurrentlyActiviteLeague();
         await fetchWeeksInALeague.bind(this)(activeLeague)
             .then( result => {
-                this.setState({numWeeks: result['num_weeks'], isLoading: false});
+                this.setState({numWeeks: result['num_weeks'], weekPickerLoading: false});
                 this.setState({numWeeksLoaded: true});
-                this.setState({week_number: result['num_weeks']-1});
+                this.setState({week_number: result['num_weeks']});
                 console.log("SPOCK:", result['num_weeks']);
                 //console.log('###', this.state.username);
                 //if (this.state.week_number == null) {
@@ -360,13 +369,6 @@ export class WeeklyPicksScreen extends React.Component {
         );
     }
 
-    /*
-                  {Array(8).fill(0).map( (_, i) => {
-                      key = String(i+1);
-                      label = 'Week ' + String(i+1);
-                      return (<Picker.Item label={label} value={key} key={key} />)
-                  })}
-                  */
     getWeekPicker() {
         return (
             <Picker
@@ -427,12 +429,13 @@ export class WeeklyPicksScreen extends React.Component {
                 <ScrollView
                   refreshControl={
                     <RefreshControl
-                      refreshing={this.state.isLoading}
+                      refreshing={this.state.isLoading || this.state.userPickerLoading || this.state.weekPickerLoading}
                       onRefresh={this._onRefresh.bind(this)}
                     />
                   }>
                   {this.getHeaderText()}
-                  <Text> "{this.state.username}" - "{this.state.week_number}" </Text>
+                  {/* Debug text for user/week state */}
+                  {/*<Text> "{this.state.username}" - "{this.state.week_number}" </Text> */}
                   <View style={{flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around'}}>
                     <View style={{flex:1}}>{this.getUserPicker()}</View>
                     <View style={{flex:1}}>{this.getWeekPicker()}</View>

@@ -69,7 +69,7 @@ export async function loadCurrentlyActiviteLeague() {
 
 export async function storeCurrentlyActiviteLeague(leagueId) {
     try {
-        AsyncStorage.setItem(ASYNC_STORAGE_LEAGUE_ID_KEY, leagueId);
+        return AsyncStorage.setItem(ASYNC_STORAGE_LEAGUE_ID_KEY, leagueId);
     } catch (error) {
         console.log(error);
     }

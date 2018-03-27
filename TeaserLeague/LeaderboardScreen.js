@@ -35,10 +35,17 @@ export class LeaderboardScreen extends React.Component {
   }
 
   state = {
-    isLoading: true
+    isLoading: true,
+    activeLeague: null
   };
 
+  async loadAndSaveActiveLeague() {
+    loadCurrentlyActiviteLeague()
+      .then( result => this.setState({activeLeague: result}) );
+  }
+
   componentDidMount() {
+    this.loadAndSaveActiveLeague();
     this.fetchData()
           .catch(((error) => {
               this.dropdown.alertWithType('error', 'Error', error.message);
@@ -73,8 +80,9 @@ async fetchData() {
         });
   }
 
-  _onRefresh() {
+  async _onRefresh() {
     this.setState({isLoading: true});
+    await this.loadAndSaveActiveLeague();
     this.fetchData()
           .catch((error) => {
               this.dropdown.alertWithType('error', 'Error', error.message);
@@ -111,7 +119,7 @@ async fetchData() {
     }
 
     return (
-        <View>
+        <View style={{flex: 1}}>
         <ScrollView refreshControl={
                 <RefreshControl
                     refreshing={this.state.isLoading}
@@ -120,7 +128,7 @@ async fetchData() {
             }
         >
             <View>
-                <Text style={Styles.styles.leaderboard_text}> Leaderboard</Text>
+                <Text style={Styles.styles.leaderboard_text}> Leaderboard {this.state.activeLeague}</Text>
             </View>
             <Table borderStyle={Styles.tableBorderStyle}>
                 <Row data={columnTitles} style={Styles.styles.leaderboard_head} textStyle={Styles.styles.leaderboard_head_text} flexArr={[1, 2, 2]}/>

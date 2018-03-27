@@ -18,8 +18,8 @@ export class SettingsScreen extends React.Component {
         this.state = {
             loggedInUsername: "Chris Farrell",
             userList: [],
-            leagueList: ['tacos'],
-            activeLeague: null
+            leagueList: [],
+            activeLeague: '2018mlb'
 
         };
 
@@ -27,7 +27,11 @@ export class SettingsScreen extends React.Component {
         loadUser.bind(this)();
         this.showAsyncStorageKeys();
         loadCurrentlyActiviteLeague()
-            .then( result => this.setState({activeLeague: result}) );
+            .then( result => {
+                console.log("Loading key state:", result);
+                this.setState({activeLeague: result}) 
+            }
+    );
     }
 
   async showAsyncStorageKeys() {
@@ -64,8 +68,6 @@ export class SettingsScreen extends React.Component {
         fetch(requestUrl)
             .then( response => response.json())
             .then( responseJson => { 
-                console.log("taco...");
-                console.log(responseJson);
                 this.setState({
                     leagueList: responseJson
                 })
@@ -73,8 +75,9 @@ export class SettingsScreen extends React.Component {
             })
             .catch(error => {
                 // this don't exist...
-                this.showErrorAlert(error)
-                this.setErrorState();
+                this.setState({
+                    leagueList: [error.message]
+                })
                 this.loadingLeagues = false;
             });
     }
@@ -118,6 +121,7 @@ export class SettingsScreen extends React.Component {
 
         return (
             <View style={{padding:20}}>
+                <Text style={{fontSize: 20}} >Login Info</Text>
                 <Text> 
                     Username
                 </Text>
@@ -137,21 +141,24 @@ export class SettingsScreen extends React.Component {
                 />
                 <Button title="Submit" onPress={authenticateAndStoreUser} color='#083D77'/>
                 <Text>Currently logged in user: {this.getUser()}</Text>
-                <Text>Current league: {this.state.activeLeague}</Text>
 
-                {/* Leagues a User is in */}
+                {/* Dropdown for leagues a user is in */}
                 <View style={{marginTop: 50}}>
                     <Text style={{fontSize: 20}} >Your Teaser Leagues</Text>
-                    <Text>Active League: {this.state.activeLeague}</Text>
                     <Picker
                       selectedValue={this.state.activeLeague}
                       onValueChange={(itemValue, itemIndex) => {
-                          console.log("Storing active league:", itemValue);
-                          this.setState({activeLeague: itemValue});
-                          storeCurrentlyActiviteLeague(itemValue);
+                          console.log("Storing active league:", itemValue, itemIndex);
+                          // Store, then set state. Otherwise, can't seem to change Picker...
+                          storeCurrentlyActiviteLeague(itemValue)
+                            .then( () =>
+                                this.setState({activeLeague: itemValue})
+                            );
                       }}>
                         {this.state.leagueList.map(league => {
-                                return (<Picker.Item label={league} value={league} key={league} />)
+                                //label = league;
+                                label = league + ((league == this.state.activeLeague) ? ' - Active' : '');
+                                return (<Picker.Item label={label} value={league} key={league} />)
                         })}
                     </Picker>
                 </View>
@@ -164,11 +171,6 @@ export class SettingsScreen extends React.Component {
                     }} />
                     <Text>{this.state.dbHost}</Text>
                 </View>
-                <Button title="Get Users" onPress={ () => {
-                    console.log("RUN");
-                    console.log("DONE");
-                }} color='#083D77'/>
-                <Text>Check console log: {this.state.fr} . {this.state.fe}</Text>
             </View>
        );
     }

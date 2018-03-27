@@ -88,16 +88,18 @@ export class ListOfWeeksScreen extends React.Component {
 		 super(props);
 		 this.state = {
              isLoading: true,
-             username: placeholderUserName,
+             username: '',
              userList: []
          };
-         loadUser.bind(this)().then( () => {this.fetchData() });
+         loadUser.bind(this)().then( () => {
+             this._onRefresh();
+             //this.fetchData() 
+         });
 	}
 
 	componentDidMount() {
 		console.log("did mount");
-		this.fetchData(); 
-        this.fetchUsersInALeagueAndSetState();
+        this._onRefresh();
 	}
 
     showErrorAlert(error) {
@@ -112,6 +114,11 @@ export class ListOfWeeksScreen extends React.Component {
     }
 
 	async fetchData() {
+        this.setState({isLoading: true})
+        if(!this.state.username) {
+            this.setState({isLoading: false})
+            return;
+        }
         requestURL = await getRequestUrl(this.state.username);
         console.log(requestURL);
         fetch(requestURL)
@@ -127,25 +134,31 @@ export class ListOfWeeksScreen extends React.Component {
 	}
 
     async fetchUsersInALeagueAndSetState() {
+        this.setState({userPickerLoading: true});
         activeLeague = await loadCurrentlyActiviteLeague();
         fetchUsersInALeague.bind(this)(activeLeague)
-            .then( result => this.setState({userList: result}))
-            .catch( error => {this.setState({userList: ['error: ' + error.message] }); console.log(error)});
+            .then( result => {
+                if(this.state.username == '' && result.length > 0) {
+                    this.setState({username: result[0]}, () => this.fetchData());
+                }
+                this.setState({userList: result, userPickerLoading: false})
+            })
+            .catch( error => {
+                this.setState({userList: ['error: ' + error.message], userPickerLoading: false});
+                console.log(error)}
+            );
     }
 
-    _onRefresh() {
-      this.setState({isLoading: true});
+    async _onRefresh() {
       this.fetchData();
+      this.fetchUsersInALeagueAndSetState();
     }
 
 
     componentWillReceiveProps(nextProps) {
         var nav_state = nextProps.navigation.state.params;
-        //this.setState({username: nav_state.selected_username}, () => {this.fetchData()});
-        console.log("ListOfWeeks screen just 'componenetWillReceiveProps'");
         this.setState({
             username: nav_state.selected_username,
-            isLoading: true
         }, () => this.fetchData() );
         
     }
@@ -180,11 +193,8 @@ export class ListOfWeeksScreen extends React.Component {
             <Picker
               selectedValue={this.state.username}
               onValueChange={(itemValue, itemIndex) => {
-                  console.log("Picker is about to set username to ", itemValue);
-                  this.setState({isLoading: true, username: itemValue}, () => {
+                  this.setState({username: itemValue}, () => {
                       this.fetchData();
-                      //console.log("Here is the state of the ListOfWeeks, unless its the Picker...");
-                      //console.log(this.state);
                   });
               }}>
                   {this.state.userList.map( key => {
@@ -233,12 +243,13 @@ export class ListOfWeeksScreen extends React.Component {
                     <ScrollView
                       refreshControl={
                         <RefreshControl
-                          refreshing={this.state.isLoading}
+                          refreshing={this.state.isLoading || this.state.userPickerLoading}
                           onRefresh={this._onRefresh.bind(this)}
                         />
                      }>
                         {headerText}
-                        <Text> "{this.state.username}"</Text>
+                        {/* Debug text for user/week state */}
+                        {/*<Text> "{this.state.username}"</Text> */}
                         {this.renderUserPicker()}
                         <Table borderStyle={Styles.tableBorderStyle}>
                           {/*<Row key={-1} data={['Week', 'Win/Loss', 'Running']} flexArr={[1,1,1]}/>*/}
@@ -257,8 +268,6 @@ export class ListOfWeeksScreen extends React.Component {
     }
 
     getWeekAndDollarDisplay(row) {
-        //console.log("getWeekAndDollarDisplay for a row");
-        //console.log(row);
 
         return [
                 <WeekCell
