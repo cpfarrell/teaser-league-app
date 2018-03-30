@@ -1,8 +1,9 @@
 import React from 'react';
 import { Picker, StyleSheet, Text, View, Button, StatusBar, ScrollView, AsyncStorage, Alert, TextInput, TouchableHighlight, Switch } from 'react-native';
-import { loadUser, ASYNC_STORAGE_USER_KEY, ASYNC_STORAGE_TOKEN_KEY } from './storage';
 import { DB_HOST, getDBHost } from './constants';
+import { loadLoggedInUsername, storeLoggedInUsername, ASYNC_STORAGE_USER_KEY, ASYNC_STORAGE_TOKEN_KEY } from './storage';
 import { storeDevMode, loadDevMode, loadCurrentlyActiviteLeague, storeCurrentlyActiviteLeague } from './storage';
+import { fetchUsersInAnyLeague } from './network';
 
 var LOGIN_URL = 'http://' + DB_HOST + '/login';
 var USER_LIST_URL = 'http://10.0.100.218:5000/users/2017TL'
@@ -17,14 +18,15 @@ export class SettingsScreen extends React.Component {
         super(props);
         this.state = {
             loggedInUsername: "Chris Farrell",
-            userList: [],
+            userList: ["Chris Farrell", "Mike Woods"],
             leagueList: [],
-            activeLeague: '2018mlb'
+            activeLeague: null
 
         };
 
         this.loadingLeagues = false;
-        loadUser.bind(this)();
+        this.loadingAllUsers = false;
+        loadLoggedInUsername.bind(this)();
         this.showAsyncStorageKeys();
         loadCurrentlyActiviteLeague()
             .then( result => {
@@ -72,13 +74,44 @@ export class SettingsScreen extends React.Component {
                     leagueList: responseJson
                 })
                 this.loadingLeagues = false;
+                // Go ahead and fill in the state if 
+                console.log("Existing activeLeague: ", this.state.activeLeague);
+                if (this.state.activeLeague == null && responseJson.length > 0) {
+                    console.log("Filler activeLeague: ", responseJson[0]);
+                    newActiveLeague = responseJson[0];
+                    this.setState({activeLeague: newActiveLeague});
+                    storeCurrentlyActiviteLeague(newActiveLeague);
+
+                }
             })
             .catch(error => {
-                // this don't exist...
+                console.log("CRAP BAD");
                 this.setState({
                     leagueList: [error.message]
                 })
                 this.loadingLeagues = false;
+            });
+    }
+
+    async loadAllUsers() {
+        // I wonder if it's easy to prevent simultaneous requests. Yup!
+        console.log("loading All users!");
+        if (this.loadingAllUsers == true) {
+            console.log("Already loading users...");
+            return;
+        }
+        this.loadingAllUsers = true;
+
+        fetchUsersInAnyLeague()
+            .then( result => {
+                this.setState({userList: result});
+                this.loadingAllUsers = false;
+            })
+            .catch(error => {
+                this.setState({
+                    userList: [error.message]
+                })
+                this.loadingAllUsers = false;
             });
     }
 
@@ -89,7 +122,10 @@ export class SettingsScreen extends React.Component {
         loadDevMode()
             .then((result) => this.setState({localDevMode: result}))
             .catch((error) => console.log(error.message));
-        this.loadLeagues();
+        this.loadLeagues()
+            .catch( error => console.log(error));
+
+        this.loadAllUsers();
     }
 
     componentDidMount() {
@@ -122,6 +158,25 @@ export class SettingsScreen extends React.Component {
         return (
             <View style={{padding:20}}>
                 <Text style={{fontSize: 20}} >Login Info</Text>
+                <Picker
+                  selectedValue={this.state.loggedInUsername}
+                  onValueChange={(itemValue, itemIndex) => {
+                      console.log("Storing logged in user:", itemValue, itemIndex);
+                      // Store, then set state. Otherwise, can't seem to change Picker...
+                      storeLoggedInUsername(itemValue)
+                        .then( () => {
+                            this.setState({loggedInUsername: itemValue}, () => this.loadLeagues())
+
+                        });
+                  }}>
+                    {this.state.userList.map(username => {
+                            //label = league;
+                            //console.log(username, " vs. ", this.state.loggedInUsername);
+                            label = username + ((username == this.state.loggedInUsername) ? ' - Active' : '');
+                            return (<Picker.Item label={label} value={username} key={username} />)
+                    })}
+                </Picker>
+                
                 <Text> 
                     Username
                 </Text>
@@ -129,6 +184,7 @@ export class SettingsScreen extends React.Component {
                     style={{height: 40, borderColor: 'gray', borderWidth: 1, padding:10}}
                     onChangeText={(text) => this.setState({user_text: text})}
                     value={this.state.user_text}
+                    placeholder={"Use the user dropdown to login"}
                 />
                 <Text> 
                     Password
@@ -138,8 +194,9 @@ export class SettingsScreen extends React.Component {
                     style={{height: 40, borderColor: 'gray', borderWidth: 1, padding:10}}
                     onChangeText={(text) => this.setState({password_text: text})}
                     value={this.state.password_text}
+                    placeholder={"Use the user dropdown to login"}
                 />
-                <Button title="Submit" onPress={authenticateAndStoreUser} color='#083D77'/>
+                <Button title="Submit" onPress={authenticateAndStoreUser} color='#083D77' disabled={true}/>
                 <Text>Currently logged in user: {this.getUser()}</Text>
 
                 {/* Dropdown for leagues a user is in */}
@@ -171,6 +228,9 @@ export class SettingsScreen extends React.Component {
                     }} />
                     <Text>{this.state.dbHost}</Text>
                 </View>
+                <Button title="Remove League Key" onPress={ () => {
+                    return AsyncStorage.removeItem('@TeaserLeague:league_id');
+                }}/>
             </View>
        );
     }

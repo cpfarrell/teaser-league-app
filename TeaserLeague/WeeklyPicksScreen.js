@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Button, StatusBar, ScrollView, CheckBox, Toucha
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell, ListView } from 'react-native-table-component';
 import PopupDialog from 'react-native-popup-dialog';
 import DropdownAlert from 'react-native-dropdownalert';
-import { loadUser, loadIdToken } from './storage';
+import { loadLoggedInUsername, loadIdToken } from './storage';
 import { DB_HOST, getDBHost, placeholderUserName } from './constants';
 import Styles from './Style';
 import { fetchUsersInALeague, fetchWeeksInALeague } from './network';
@@ -58,7 +58,7 @@ export class WeeklyPicksScreen extends React.Component {
         numWeeks: 0,
         numWeeksLoaded: false,
       }
-      loadUser.bind(this)();
+      loadLoggedInUsername.bind(this)();
       loadIdToken.bind(this)();
       this.popUpMapping = {}
     }
@@ -100,7 +100,7 @@ export class WeeklyPicksScreen extends React.Component {
     async saveDataToServer(event) {
 
       // Make sure the id_token has been loaded.
-      await loadUser.bind(this)();
+      await loadLoggedInUsername.bind(this)();
       await loadIdToken.bind(this)();
       const makePicksRequestUrl = await getMakePicksRequestUrl();
       fetch(makePicksRequestUrl + fake_week_number + '/' + this.state.username, {

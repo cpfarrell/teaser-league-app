@@ -1,5 +1,10 @@
 {
   "expo": {
-    "sdkVersion": "23.0.0"
+    "sdkVersion": "23.0.0",
+    "version": "1.0.1",
+    "slug": "teaserleagueapp",
+    "android": {
+      "package": "com.teaserleague.teaserleagueapp"
+    }
   }
 }

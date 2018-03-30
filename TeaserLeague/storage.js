@@ -7,10 +7,10 @@ export var ASYNC_STORAGE_TOKEN_KEY = '@TeaserLeague:id_token';
 export var ASYNC_STORAGE_LEAGUE_ID_KEY = '@TeaserLeague:league_id';
 export var ASYNC_STORAGE_DEV_MODE_KEY = '@TeaserLeague:dev_mode';
 
-export async function loadUser() {
+export async function loadLoggedInUsername() {
     try {
       const value = await AsyncStorage.getItem(ASYNC_STORAGE_USER_KEY);
-      this.setState({loggedInUser: value})
+      this.setState({loggedInUsername: value})
       if (value !== null){
         // We have data!!
         void(0);
@@ -24,6 +24,15 @@ export async function loadUser() {
         console.log(error);
     }
 }
+
+export async function storeLoggedInUsername(username) {
+    try {
+        return AsyncStorage.setItem(ASYNC_STORAGE_USER_KEY, username);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 
 export async function loadIdToken() {
     try {

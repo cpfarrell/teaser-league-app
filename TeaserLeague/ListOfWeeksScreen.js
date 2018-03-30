@@ -12,7 +12,7 @@ import {
     View,
 } from 'react-native';
 import DropdownAlert from 'react-native-dropdownalert';
-import { loadUser } from './storage';
+import { loadLoggedInUsername } from './storage';
 import { DB_HOST, getDBHost, placeholderUserName } from './constants';
 import { 
     Table,
@@ -91,7 +91,7 @@ export class ListOfWeeksScreen extends React.Component {
              username: '',
              userList: []
          };
-         loadUser.bind(this)().then( () => {
+         loadLoggedInUsername.bind(this)().then( () => {
              this._onRefresh();
              //this.fetchData() 
          });
