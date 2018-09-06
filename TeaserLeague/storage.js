@@ -69,7 +69,8 @@ export async function storeDevMode(is_dev_mode) {
 export async function loadCurrentlyActiviteLeague() {
     try {
       //const league = await AsyncStorage.getItem(ASYNC_STORAGE_LEAGUE_ID_KEY);
-      return AsyncStorage.getItem(ASYNC_STORAGE_LEAGUE_ID_KEY);
+      return "2018TL"
+      //return AsyncStorage.getItem(ASYNC_STORAGE_LEAGUE_ID_KEY);
     } catch (error) {
         console.log("[ERROR] Error fetching stored league from persistent storage.");
         console.log(error);

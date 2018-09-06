@@ -149,7 +149,7 @@ export class WeeklyPicksScreen extends React.Component {
         }
         console.log("Boolean values 1:")
         console.log(this.state.isLoading, this.state.userPickerLoading, this.state.weekPickerLoading);
-        fetch(requestUrl + this.state.week_number + '/' + this.state.username)
+        fetch(requestUrl + this.state.week_number + '/' + this.state.username + '/')
             .then( response => response.json())
             .then( responseJson => { 
                 pickCount = this.getPickCount(responseJson)
@@ -449,11 +449,13 @@ export class WeeklyPicksScreen extends React.Component {
                     <Row data={tableHead} style={styles.head} textStyle={styles.text}/>
                       {tableRows}
                   </Table>
-                  <TouchableOpacity onPress={() => {this._handlePressSave(data)}} underlayColor='#fff'>
-                    <Text style={textStyle}>
-                        Save
-                    </Text>
-                  </TouchableOpacity>
+              {
+              /*<TouchableOpacity onPress={() => {this._handlePressSave(data)}} underlayColor='#fff'>*/
+              /*<Text style={textStyle}>*/
+              /*      Save*/
+              /*  </Text>*/
+              /*  </TouchableOpacity>*/
+              }
                 </ScrollView>
               <DropdownAlert ref={ref => this.dropdown = ref} />
               </View>

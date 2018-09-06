@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { TabNavigator } from 'react-navigation';
-fdgg
+
 import { LeaderboardScreen } from './LeaderboardScreen';
 import { ListOfWeeksScreen } from './ListOfWeeksScreen';
 import { SettingsScreen } from './SettingsScreen';
@@ -40,13 +40,6 @@ const RootTabNavigator = TabNavigator({
             },
 
         },
-        \\        Settings: x            screen: SettingsScreen,
-            navigationOptions: {
-                tabBarLabel: 'Settings',
-                tabBarIcon: <Icon type='ionicon' name='md-settings' color='#FFFFFF' size={icon_size}/>,
-            },
-
-        ,
     },
     {
         tabBarPosition: 'bottom',
